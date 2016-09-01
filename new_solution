@@ -1,0 +1,55 @@
+#! /usr/bin/env bash
+
+function usage {
+  cat <<EOF
+Usage: $0 <problem_number> <problem_name>
+Example:
+$0 200 number-of-islands
+EOF
+}
+
+if [[ $# != 2 ]]; then
+  usage
+  exit 1
+fi
+
+problem_number=$1
+problem_name=$2
+
+dest_dir="$problem_number-$problem_name"
+dest_file="$dest_dir/$problem_name.cpp"
+
+mkdir -p $dest_dir
+
+cat <<'BOILERPLATE_EOF' >$dest_file
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
+#include <iterator>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+ public:
+
+};
+
+int main(int argc, char* argv[]) {
+  Solution sol;
+  cout << "Hello world\n";
+  return 0;
+}
+BOILERPLATE_EOF
+
+cat <<GITIGNORE_EOF >$dest_dir/.gitignore
+$problem_name
+GITIGNORE_EOF
+
+(cd $dest_dir; make $problem_name)
