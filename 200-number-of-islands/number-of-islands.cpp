@@ -15,42 +15,36 @@ using namespace std;
 class Solution {
  public:
 
-  void explore(const vector<vector<char> >& grid, size_t i, size_t j, unordered_set<string>& visited) {
-    stringstream oss;
-    oss << i << "_" << j;
-    visited.insert(oss.str());
+  void explore(const vector<vector<char> >& grid, size_t i, size_t j, vector<vector<bool> >& visited) {
+    visited[i][j] = true;
 
-    oss.str(""); oss << (i + 1) << "_" << j;
-    if (i + 1 < grid.size() && grid[i + 1][j] == '1' && visited.find(oss.str()) == visited.end()) {
+    if (i + 1 < grid.size() && grid[i + 1][j] == '1' && visited[i + 1][j] == false) {
       explore(grid, i + 1, j, visited);
     }
 
-    oss.str(""); oss << (i - 1) << "_" << j;
-    if (i >= 1 && grid[i - 1][j] == '1' && visited.find(oss.str()) == visited.end()) {
+    if (i >= 1 && grid[i - 1][j] == '1' && visited[i - 1][j] == false) {
       explore(grid, i - 1, j, visited);
     }
 
-    oss.str(""); oss << i << "_" << j + 1;
-    if (j + 1 < grid[i].size() && grid[i][j + 1] == '1' && visited.find(oss.str()) == visited.end()) {
+    if (j + 1 < grid[i].size() && grid[i][j + 1] == '1' && visited[i][j + 1] == false) {
       explore(grid, i, j + 1, visited);
     }
 
-    oss.str(""); oss << i << "_" << j - 1;
-    if (j >= 1 && grid[i][j - 1] == '1' && visited.find(oss.str()) == visited.end()) {
+    if (j >= 1 && grid[i][j - 1] == '1' && visited[i][j - 1] == false) {
       explore(grid, i, j - 1, visited);
     }
   }
 
   int numIslands(vector<vector<char> >& grid) {
-
-    unordered_set<string> visited;
-    stringstream oss;
+    int m = grid.size();
+    if (m <= 0) return 0;
+    int n = grid[0].size();
+    vector<vector<bool> > visited(m, vector<bool>(n, false));
     int count = 0;
 
     for (size_t i = 0; i < grid.size(); ++i) {
       for (size_t j = 0; j < grid[i].size(); ++j) {
-        oss.str(""); oss << i << "_" << j;
-        if (visited.find(oss.str()) == visited.end() && grid[i][j] == '1') {
+        if (visited[i][j] == false && grid[i][j] == '1') {
           explore(grid, i, j, visited);
           ++count;
         }
