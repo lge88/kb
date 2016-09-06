@@ -54,10 +54,10 @@ GITIGNORE_EOF
 
 cat <<MAKEFILE_EOF >$dest_dir/Makefile
 run: $problem_name
-	./$problem_name
+	@./$problem_name
 
 $problem_name: $problem_name.cpp
-	g++ -std=c++11 \$^ -o \$@
+	@g++ -std=c++11 \$^ -o \$@
 MAKEFILE_EOF
 
 (cd $dest_dir; pwd; make)
