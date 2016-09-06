@@ -93,13 +93,13 @@ class Graph {
     return adj_.find(u)->second;
   }
 
-  void print(std::ostream& out) const {
+  void printVertices(std::ostream& out) const {
     std::vector<std::string> colorToString(3);
     colorToString[0] = "WHITE";
     colorToString[1] = "GRAY";
     colorToString[2] = "BLACK";
 
-    out << "vertice:\n";
+    out << "Vertice:\n";
     for (std::map<std::string, Vertex>::const_iterator it = vertices_.begin();
          it != vertices_.end();
          ++it) {
@@ -112,9 +112,10 @@ class Graph {
       out << " val=" << v.val_;
       out << "\n";
     }
-    out << "\n";
+  }
 
-    out << "edges:\n";
+  void printEdges(std::ostream& out) const {
+    out << "Edges:\n";
     for (std::map<std::string, std::set<std::string> >::const_iterator it = adj_.begin();
          it != adj_.end();
          ++it) {
@@ -128,9 +129,20 @@ class Graph {
       }
     }
   }
+
+  void print(std::ostream& out) const {
+    printVertices(out);
+    out << "\n";
+    printEdges(out);
+  }
+
 };
 
 void dfsVisit(Graph& g, int& time, const std::string& u) {
+  std::cout << "time: " << time << ", at " << u << "\n";
+  g.printVertices(std::cout);
+  std::cout << "\n";
+
   Vertex& uVertex = g.getMutableVertex(u);
 
   time += 1;
@@ -144,8 +156,18 @@ void dfsVisit(Graph& g, int& time, const std::string& u) {
     const std::string& v = *it;
     Vertex& vVertex = g.getMutableVertex(v);
     if (vVertex.color_ == Vertex::WHITE) {
+      std::cout << "Edge Classification: " << u << " -> " << v << " : Tree\n";
       vVertex.prev_ = u;
       dfsVisit(g, time, v);
+    } else if (vVertex.color_ == Vertex::GRAY) {
+      std::cout << "Edge Classification: " << u << " -> " << v << " : Back\n";
+    } else {
+      // vVertex is BLACK
+      if (uVertex.discoveredTime_ < vVertex.discoveredTime_) {
+        std::cout << "Edge Classification: " << u << " -> " << v << " : Forward\n";
+      } else {
+        std::cout << "Edge Classification: " << u << " -> " << v << " : Cross\n";
+      }
     }
   }
 
@@ -191,10 +213,12 @@ int main(int argc, char* argv[]) {
 
   std::cout << "BEFORE DFS\n";
   g.print(std::cout);
+  std::cout << "\n";
 
   dfs(g);
+  std::cout << "\n";
 
-  std::cout << "\nAFTER DFS\n";
+  std::cout << "AFTER DFS\n";
   g.print(std::cout);
 
   return 0;
