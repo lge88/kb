@@ -1,112 +1,9 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
-#include <map>
-#include <set>
-#include <unordered_map>
-#include <unordered_set>
-#include <iterator>
-#include <algorithm>
-#include <functional>
 
-template <typename GraphStateType, typename VertexStateType,
-          typename EdgeStateType, typename VertexIdType = std::string>
-class Graph {
- public:
-  typedef typename std::vector<VertexIdType>::const_iterator VertexIterator;
-
-  Graph() {}
-
-  // Return false if u is already in graph
-  bool addVertex(const VertexIdType& u) {
-    if (hasVertex(u)) return false;
-
-    vertices_.push_back(u);
-    adj_.insert(std::make_pair(u, std::vector<VertexIdType>(0)));
-    vertexStateMap_.insert(std::make_pair(u, VertexStateType()));
-    return true;
-  }
-
-  bool hasVertex(const VertexIdType& u) const {
-    return adj_.find(u) != adj_.end();
-  }
-
-  // Caller is responsible to make sure vertex u is in the graph.
-  const VertexStateType& getVertexState(const VertexIdType& u) const {
-    return vertexStateMap_.find(u)->second;
-  }
-
-  // Caller is responsible to make sure vertex u is in the graph.
-  VertexStateType& getMutableVertexState(const VertexIdType& u) {
-    return vertexStateMap_.find(u)->second;
-  }
-
-  // Caller is responsible to make sure edge (u, v) is in the graph.
-  const EdgeStateType& getEdgeState(const VertexIdType& u, const VertexIdType& v) const {
-    return edgeStateMap_.find(u)->second.find(v)->second;
-  }
-
-  // Caller is responsible to make sure edge (u, v) is in the graph.
-  EdgeStateType& getMutableEdgeState(const VertexIdType& u, const VertexIdType& v) {
-    return edgeStateMap_.find(u)->second.find(v)->second;
-  }
-
-  const GraphStateType& getState() const {
-    return state_;
-  }
-
-  GraphStateType& getMutableState() {
-    return state_;
-  }
-
-  bool hasEdge(const VertexIdType& u, const VertexIdType& v) const {
-    return edgeStateMap_.find(u) != edgeStateMap_.end()
-        && edgeStateMap_.find(u)->second.find(v) != edgeStateMap_.find(u)->second.end();
-  }
-
-  // Return false if u or v is not a vertex in the graph or (u, v)
-  // already in the graph.
-  bool addEdge(const VertexIdType& u, const VertexIdType& v) {
-    if (!hasVertex(u) || !hasVertex(v) || hasEdge(u, v)) return false;
-    adj_[u].push_back(v);
-    edgeStateMap_[u][v] = EdgeStateType();
-    return true;
-  }
-
-  // Return a iterator of all vertices.
-  VertexIterator vertexBegin() const {
-    return vertices_.begin();
-  }
-
-  VertexIterator vertexEnd() const {
-    return vertices_.end();
-  }
-
-  // Caller is responsible to make sure u is in the graph.
-  VertexIterator adjBegin(const std::string& u) const {
-    return adj_.find(u)->second.begin();
-  }
-
-  VertexIterator adjEnd(const std::string& u) const {
-    return adj_.find(u)->second.end();
-  }
-
- private:
-  std::vector<VertexIdType> vertices_;
-  std::unordered_map<VertexIdType, std::vector<VertexIdType> > adj_;
-
-  // States
-  GraphStateType state_;
-
-  std::unordered_map<VertexIdType, VertexStateType> vertexStateMap_;
-
-  // 2D hash map of edge states
-  std::unordered_map<
-    VertexIdType,
-    std::unordered_map<VertexIdType, EdgeStateType> > edgeStateMap_;
-};
+#include "000-clrs-graph-template-v1/Graph.hh"
+#include "000-clrs-graph-template-v1/GraphTextIO.hh"
 
 struct DfsGraphState {
   int time_;
@@ -114,6 +11,11 @@ struct DfsGraphState {
       time_(0)
   {}
 };
+
+std::ostream& operator<<(std::ostream& to, const DfsGraphState& s) {
+  to << "{ time=" << s.time_ << " }";
+  return to;
+}
 
 struct DfsVertexState {
   enum Color {
@@ -133,6 +35,20 @@ struct DfsVertexState {
   {}
 };
 
+std::ostream& operator<<(std::ostream& to, const DfsVertexState& s) {
+  std::vector<std::string> colorToString(3);
+  colorToString[0] = "WHITE";
+  colorToString[1] = "GRAY";
+  colorToString[2] = "BLACK";
+  to << "{";
+  to << " color=" << colorToString[s.color_];
+  to << " prev=" << (s.prev_.empty() ? "NULL" : s.prev_);
+  to << " discoveredTime=" << s.discoveredTime_;
+  to << " finishedTime=" << s.finishedTime_;
+  to << " }";
+  return to;
+}
+
 struct DfsEdgeState {
   enum EdgeType {
     UNKNOWN = 0,
@@ -147,62 +63,22 @@ struct DfsEdgeState {
   {}
 };
 
-typedef std::string DfsVertexIdType;
-
-typedef Graph<DfsGraphState, DfsVertexState, DfsEdgeState, DfsVertexIdType> MyGraph;
-
-void printVertices(const MyGraph& g, std::ostream& out) {
-  std::vector<std::string> colorToString(3);
-  colorToString[0] = "WHITE";
-  colorToString[1] = "GRAY";
-  colorToString[2] = "BLACK";
-
-  out << "Vertice:\n";
-  for (MyGraph::VertexIterator uIter = g.vertexBegin();
-       uIter != g.vertexEnd();
-       ++uIter) {
-    const std::string& u = *uIter;
-    const DfsVertexState& uState = g.getVertexState(u);
-
-    out << u << ": {";
-    out << " color=" << colorToString[uState.color_];
-    out << " prev=" << (uState.prev_ == "" ? "NULL" : uState.prev_);
-    out << " d=" << uState.discoveredTime_;
-    out << " f=" << uState.finishedTime_;
-    out << " }\n";
-  }
-}
-
-void printEdges(const MyGraph& g, std::ostream& out) {
+std::ostream& operator<<(std::ostream& to, const DfsEdgeState& s) {
   std::vector<std::string> edgeTypeToString(5);
   edgeTypeToString[0] = "UNKNOWN";
   edgeTypeToString[1] = "TREE";
   edgeTypeToString[2] = "BACK";
   edgeTypeToString[3] = "FORWARD";
   edgeTypeToString[4] = "CROSS";
-
-  out << "Edges:\n";
-  for (MyGraph::VertexIterator uIter = g.vertexBegin();
-       uIter != g.vertexEnd();
-       ++uIter) {
-    const std::string& u = *uIter;
-    for (MyGraph::VertexIterator vIter = g.adjBegin(u);
-         vIter != g.adjEnd(u);
-         ++vIter) {
-      const std::string& v = *vIter;
-      const DfsEdgeState& eState = g.getEdgeState(u, v);
-      out << u << " -> " << v << ": {";
-      out << " type=" << edgeTypeToString[eState.type_];
-      out << " }\n";
-    }
-  }
+  to << "{";
+  to << " type=" << edgeTypeToString[s.type_];
+  to << " }";
+  return to;
 }
 
-void printMyGraph(const MyGraph& g, std::ostream& out) {
-  printVertices(g, out);
-  out << "\n";
-  printEdges(g, out);
-}
+typedef std::string DfsVertexIdType;
+typedef Graph<DfsGraphState, DfsVertexState, DfsEdgeState, DfsVertexIdType> MyGraph;
+typedef GraphTextIO<DfsGraphState, DfsVertexState, DfsEdgeState, DfsVertexIdType> MyGraphTextIO;
 
 void dfsVisit(MyGraph& g, const std::string& s) {
   int& time = g.getMutableState().time_;
@@ -299,18 +175,20 @@ int main(int argc, char* argv[]) {
     g.addEdge("y", "x");
     g.addEdge("z", "z");
 
+    MyGraphTextIO io(g);
+
     std::cout << "BEFORE DFS\n";
-    printMyGraph(g, std::cout);
+    io.writeDebug(std::cout);
     std::cout << "\n";
 
     dfs(g);
-    std::cout << "\n";
 
     std::cout << "AFTER DFS\n";
-    printMyGraph(g, std::cout);
+    io.writeDebug(std::cout);
+    std::cout << "\n";
   }
 
-  if (false) {
+  if (true) {
     // clrs Figure 22.5(a), page 607
     MyGraph g;
     g.addVertex("s");
@@ -336,15 +214,17 @@ int main(int argc, char* argv[]) {
     g.addEdge("u", "v");
     g.addEdge("u", "t");
 
+    MyGraphTextIO io(g);
+
     std::cout << "BEFORE DFS\n";
-    printMyGraph(g, std::cout);
+    io.writeDebug(std::cout);
     std::cout << "\n";
 
     dfs(g);
-    std::cout << "\n";
 
     std::cout << "AFTER DFS\n";
-    printMyGraph(g, std::cout);
+    io.writeDebug(std::cout);
+    std::cout << "\n";
   }
   return 0;
 }
