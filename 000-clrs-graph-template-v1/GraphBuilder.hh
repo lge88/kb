@@ -3,17 +3,13 @@
 
 #include "Graph.hh"
 
-template <typename GraphStateType = DefaultGraphState,
-          typename VertexStateType = DefaultVertexState,
-          typename EdgeStateType = DefaultEdgeState,
-          typename VertexIdType = DefaultVertexIdType>
+template <typename GraphType = Graph<> >
 class GraphBuilder {
  public:
-  typedef Graph<GraphStateType, VertexStateType, EdgeStateType, VertexIdType> MyGraph;
 
   // clrs Figure 22.4, page 605
-  static MyGraph clrs_22_4() {
-    MyGraph g;
+  static GraphType clrs_22_4() {
+    GraphType g;
     g.addVertex("u");
     g.addVertex("v");
     g.addVertex("w");
@@ -34,8 +30,8 @@ class GraphBuilder {
   }
 
   // clrs Figure 22.4, page 605
-  static MyGraph clrs_22_5_a() {
-    MyGraph g;
+  static GraphType clrs_22_5_a() {
+    GraphType g;
     g.addVertex("s");
     g.addVertex("z");
     g.addVertex("y");

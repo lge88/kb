@@ -3,15 +3,11 @@
 
 #include "Graph.hh"
 
-template <typename GraphStateType = DefaultGraphState,
-          typename VertexStateType = DefaultVertexState,
-          typename EdgeStateType = DefaultEdgeState,
-          typename VertexIdType = DefaultVertexIdType>
+template <typename GraphType = Graph<> >
 class GraphTextIO {
  public:
-  typedef Graph<GraphStateType, VertexStateType, EdgeStateType, VertexIdType> MyGraph;
 
-  GraphTextIO(MyGraph& g) :
+  GraphTextIO(GraphType& g) :
       g_(g)
   {}
 
@@ -19,10 +15,10 @@ class GraphTextIO {
     if (debug == true) to << "Number of vertices: ";
     to << g_.numVertices() << "\n";
     if (debug == true) to << "Vertices:\n";
-    for (typename MyGraph::VertexIterator uIter = g_.vertexBegin();
+    for (typename GraphType::VertexIterator uIter = g_.vertexBegin();
          uIter != g_.vertexEnd();
          ++uIter) {
-      const typename MyGraph::VertexId& u = *uIter;
+      const typename GraphType::VertexId& u = *uIter;
       to << u;
       if (debug == true) {
         to << ": " << g_.getVertexState(u);
@@ -35,14 +31,14 @@ class GraphTextIO {
     if (debug == true) to << "Number of edges: ";
     to << g_.numEdges() << "\n";
     if (debug == true) to << "Edges:\n";
-    for (typename MyGraph::VertexIterator uIter = g_.vertexBegin();
+    for (typename GraphType::VertexIterator uIter = g_.vertexBegin();
          uIter != g_.vertexEnd();
          ++uIter) {
-      const typename MyGraph::VertexId& u = *uIter;
-      for (typename MyGraph::VertexIterator vIter = g_.adjBegin(u);
+      const typename GraphType::VertexId& u = *uIter;
+      for (typename GraphType::VertexIterator vIter = g_.adjBegin(u);
            vIter != g_.adjEnd(u);
            ++vIter) {
-        const typename MyGraph::VertexId& v = *vIter;
+        const typename GraphType::VertexId& v = *vIter;
         to << u
            << (debug ? " -> " : "\t")
            << v;
@@ -70,7 +66,7 @@ class GraphTextIO {
     from >> numVertices;
 
     size_t i = 0;
-    typename MyGraph::VertexId u;
+    typename GraphType::VertexId u;
     while (i < numVertices && (from >> u)) {
       g_.addVertex(u);
       ++i;
@@ -86,7 +82,7 @@ class GraphTextIO {
     from >> numEdges;
 
     size_t i = 0;
-    typename MyGraph::VertexId u, v;
+    typename GraphType::VertexId u, v;
     while (i < numEdges && (from >> u) && (from >> v)) {
       g_.addEdge(u, v);
       ++i;
@@ -103,7 +99,7 @@ class GraphTextIO {
   }
 
  private:
-  MyGraph& g_;
+  GraphType& g_;
 
 };
 
