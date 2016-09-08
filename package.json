@@ -1,0 +1,14 @@
+{
+  "name": "lc",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lge88/lc.git"
+  },
+  "author": "Li Ge",
+  "license": "MIT",
+  "homepage": "https://github.com/lge88/lc#readme",
+  "dependencies": {
+    "mustache": "^2.2.1"
+  }
+}
