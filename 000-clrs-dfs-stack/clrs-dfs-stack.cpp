@@ -10,74 +10,76 @@
 #include <iterator>
 #include <algorithm>
 
-template <typename StateType>
-struct Vertex {
-  const std::string id_;
-  StateType state_;
-  Vertex(const std::string& id) :
-      id_(id)
-  {}
-};
-
-template <typename VertexStateType>
+template <typename VertexStateType, typename GraphStateType = int,
+          typename VertexIdType = std::string, typename EdgeStateType = int>
 class Graph {
  public:
-  typedef Vertex<VertexStateType> V;
-
   Graph() {}
 
-  bool addVertex(const std::string& id) {
-    if (vertices_.find(id) != vertices_.end()) return false;
-    vertices_.insert(std::make_pair(id, V(id)));
+  // Return false if u is already in graph
+  bool addVertex(const VertexIdType& u) {
+    if (hasVertex(u)) return false;
+
+    vertices_.push_back(u);
+    adj_.insert(std::make_pair(u, std::vector<VertexIdType>(0)));
+    vertexStateMap_.insert(std::make_pair(u, VertexStateType()));
     return true;
   }
 
-  bool hasVertex(const std::string& id) const {
-    return vertices_.find(id) != vertices_.end();
+  bool hasVertex(const VertexIdType& u) const {
+    return adj_.find(u) != adj_.end();
   }
 
-  const V& getVertex(const std::string& id) const {
-    return vertices_.find(id)->second;
+  // Caller is responsible to make sure u is in the graph.
+  const VertexStateType& getVertexState(const VertexIdType& u) const {
+    return vertexStateMap_.find(u)->second;
   }
 
-  V& getMutableVertex(const std::string& id) {
-    return vertices_.find(id)->second;
+  // Caller is responsible to make sure u is in the graph.
+  VertexStateType& getMutableVertexState(const VertexIdType& u) {
+    return vertexStateMap_.find(u)->second;
   }
 
-  bool addEdge(const std::string& u, const std::string& v) {
+  const GraphStateType& getState() const {
+    return state_;
+  }
+
+  GraphStateType& getMutableState() {
+    return state_;
+  }
+
+  // Return false if u or v is not a vertex in the graph.
+  bool addEdge(const VertexIdType& u, const VertexIdType& v) {
     if (!hasVertex(u) || !hasVertex(v)) return false;
-
-    adj_[u].insert(v);
+    adj_[u].push_back(v);
     return true;
   }
 
-  bool hasEdge(const std::string& u, const std::string& v) const {
-    if (!hasVertex(u)) return false;
-    const std::set<std::string>& neighbors = adj_.find(u)->second;
-    return neighbors.find(v) != neighbors.end();
+  // Return a const reference of vertices. TODO: Ideally should return
+  // a iterator.
+  const std::vector<VertexIdType>& vertices() const {
+    return vertices_;
   }
 
-  // Ideally should return a iterator
-  std::vector<std::string> vertices() const {
-    std::vector<std::string> out;
-    for (typename std::map<std::string, V>::const_iterator it = vertices_.begin();
-         it != vertices_.end();
-         ++it) {
-      out.push_back(it->first);
-    }
-    return out;
-  }
-
-  const std::set<std::string>& adj(const std::string& u) const {
+  // Caller is responsible to make sure u is in the graph.
+  const std::vector<VertexIdType>& adj(const std::string& u) const {
     return adj_.find(u)->second;
   }
 
  private:
-  std::map<std::string, V> vertices_;
-  std::map<std::string, std::set<std::string> > adj_;
+  std::vector<VertexIdType> vertices_;
+  std::unordered_map<VertexIdType, std::vector<VertexIdType> > adj_;
+
+  // States
+  GraphStateType state_;
+  std::unordered_map<VertexIdType, VertexStateType> vertexStateMap_;
+
+  // TODO: edge state map
+  // typedef std::tuple<VertexIdType, VertexIdType> EdgeIdType;
+  // std::unordered_map<EdgeIdType, EdgeStateType> edgeStateMap_;
 };
 
-struct DfsState {
+struct DfsVertexState {
   enum Color {
     WHITE = 0,
     GRAY,
@@ -87,7 +89,7 @@ struct DfsState {
   std::string prev_;
   int discoveredTime_;
   int finishedTime_;
-  DfsState() :
+  DfsVertexState() :
       color_(WHITE),
       prev_(""),
       discoveredTime_(-1),
@@ -95,7 +97,14 @@ struct DfsState {
   {}
 };
 
-typedef Graph<DfsState> MyGraph;
+struct DfsGraphState {
+  int time_;
+  DfsGraphState() :
+      time_(0)
+  {}
+};
+
+typedef Graph<DfsVertexState, DfsGraphState> MyGraph;
 
 void printVertices(const MyGraph& g, std::ostream& out) {
   std::vector<std::string> colorToString(3);
@@ -105,14 +114,16 @@ void printVertices(const MyGraph& g, std::ostream& out) {
 
   out << "Vertice:\n";
 
-  const std::vector<std::string> vertices = g.vertices();
+  const std::vector<std::string>& vertices = g.vertices();
   for (size_t i = 0; i < vertices.size(); ++i) {
-    const MyGraph::V& v = g.getVertex(vertices[i]);
-    out << v.id_;
-    out << ": color=" << colorToString[v.state_.color_];
-    out << " prev=" << (v.state_.prev_ == "" ? "NULL" : v.state_.prev_);
-    out << " d=" << v.state_.discoveredTime_;
-    out << " f=" << v.state_.finishedTime_;
+    const std::string& u = vertices[i];
+    const DfsVertexState& uState = g.getVertexState(u);
+
+    out << u;
+    out << ": color=" << colorToString[uState.color_];
+    out << " prev=" << (uState.prev_ == "" ? "NULL" : uState.prev_);
+    out << " d=" << uState.discoveredTime_;
+    out << " f=" << uState.finishedTime_;
     out << "\n";
   }
 }
@@ -120,11 +131,11 @@ void printVertices(const MyGraph& g, std::ostream& out) {
 void printEdges(const MyGraph& g, std::ostream& out) {
   out << "Edges:\n";
 
-  const std::vector<std::string> vertices = g.vertices();
+  const std::vector<std::string>& vertices = g.vertices();
   for (size_t i = 0; i < vertices.size(); ++i) {
     const std::string& u = vertices[i];
-    const std::set<std::string>& neighbors = g.adj(u);
-    for (std::set<std::string>::const_iterator it = neighbors.begin();
+    const std::vector<std::string>& neighbors = g.adj(u);
+    for (std::vector<std::string>::const_iterator it = neighbors.begin();
          it != neighbors.end();
          ++it) {
       const std::string& v = *it;
@@ -139,37 +150,40 @@ void printMyGraph(const MyGraph& g, std::ostream& out) {
   printEdges(g, out);
 }
 
-void dfsVisit(MyGraph& g, int& time, const std::string& s) {
-  MyGraph::V& sObj = g.getMutableVertex(s);
+void dfsVisit(MyGraph& g, const std::string& s) {
+  int& time = g.getMutableState().time_;
+
+  DfsVertexState& sState = g.getMutableVertexState(s);
 
   time += 1;
-  sObj.state_.color_ = DfsState::GRAY;
-  sObj.state_.discoveredTime_ = time;
+  sState.color_ = DfsVertexState::GRAY;
+  sState.discoveredTime_ = time;
 
-  std::vector<std::pair<std::string, std::set<std::string>::const_iterator> > stack;
+  std::vector<std::pair<std::string, std::vector<std::string>::const_iterator> > stack;
   stack.push_back(std::make_pair(s, g.adj(s).begin()));
 
   while (!stack.empty()) {
     const std::string u = stack.back().first;
-    MyGraph::V& uObj = g.getMutableVertex(u);
-    std::set<std::string>::const_iterator& it = stack.back().second;
-    const std::set<std::string>& neighbors = g.adj(u);
+    DfsVertexState& uState = g.getMutableVertexState(u);
+    std::vector<std::string>::const_iterator& it = stack.back().second;
+    const std::vector<std::string>& neighbors = g.adj(u);
 
     if (it != neighbors.end()) {
       const std::string v = *it;
-      MyGraph::V& vObj = g.getMutableVertex(v);
-      if (vObj.state_.color_ == DfsState::WHITE) {
+      DfsVertexState& vState = g.getMutableVertexState(v);
+
+      if (vState.color_ == DfsVertexState::WHITE) {
         std::cout << "Edge Classification: " << u << " -> " << v << " : Tree\n";
         time += 1;
-        vObj.state_.color_ = DfsState::GRAY;
-        vObj.state_.discoveredTime_ = time;
-        vObj.state_.prev_ = u;
+        vState.color_ = DfsVertexState::GRAY;
+        vState.discoveredTime_ = time;
+        vState.prev_ = u;
         stack.push_back(std::make_pair(v, g.adj(v).begin()));
-      } else if (vObj.state_.color_ == DfsState::GRAY) {
+      } else if (vState.color_ == DfsVertexState::GRAY) {
         std::cout << "Edge Classification: " << u << " -> " << v << " : Back\n";
         ++it;
       } else {
-        if (uObj.state_.discoveredTime_ < vObj.state_.discoveredTime_) {
+        if (uState.discoveredTime_ < vState.discoveredTime_) {
           std::cout << "Edge Classification: " << u << " -> " << v << " : Forward\n";
         } else {
           std::cout << "Edge Classification: " << u << " -> " << v << " : Cross\n";
@@ -178,8 +192,8 @@ void dfsVisit(MyGraph& g, int& time, const std::string& s) {
       }
     } else {
       time += 1;
-      uObj.state_.color_ = DfsState::BLACK;
-      uObj.state_.finishedTime_ = time;
+      uState.color_ = DfsVertexState::BLACK;
+      uState.finishedTime_ = time;
       stack.pop_back();
       // advance parent iterator
       if (!stack.empty()) ++stack.back().second;
@@ -188,26 +202,29 @@ void dfsVisit(MyGraph& g, int& time, const std::string& s) {
 }
 
 void dfs(MyGraph& g) {
-  const std::vector<std::string> vertices = g.vertices();
+  const std::vector<std::string>& vertices = g.vertices();
   for (size_t i = 0; i < vertices.size(); ++i) {
     const std::string& u = vertices[i];
-    MyGraph::V& uObj = g.getMutableVertex(u);
-    uObj.state_.color_ = DfsState::WHITE;
-    uObj.state_.prev_ = "";
+    DfsVertexState& uState = g.getMutableVertexState(u);
+    uState.color_ = DfsVertexState::WHITE;
+    uState.prev_ = "";
   }
 
-  int time = 0;
+  int& time = g.getMutableState().time_;
+
+  time = 0;
   for (size_t i = 0; i < vertices.size(); ++i) {
     const std::string& s = vertices[i];
-    MyGraph::V& sObj = g.getMutableVertex(s);
-    if (sObj.state_.color_ == DfsState::WHITE) {
-      dfsVisit(g, time, s);
+    const DfsVertexState& sState = g.getVertexState(s);
+    if (sState.color_ == DfsVertexState::WHITE) {
+      dfsVisit(g, s);
     }
   }
 }
 
 int main(int argc, char* argv[]) {
-  {
+  if (false) {
+    // clrs Figure 22.4, page 605
     MyGraph g;
     g.addVertex("u");
     g.addVertex("v");
@@ -236,30 +253,31 @@ int main(int argc, char* argv[]) {
     printMyGraph(g, std::cout);
   }
 
-  {
+  if (true) {
+    // clrs Figure 22.5(a), page 607
     MyGraph g;
-    g.addVertex("y");
-    g.addVertex("z");
     g.addVertex("s");
-    g.addVertex("t");
+    g.addVertex("z");
+    g.addVertex("y");
     g.addVertex("x");
     g.addVertex("w");
+    g.addVertex("t");
     g.addVertex("v");
     g.addVertex("u");
 
-    g.addEdge("y", "x");
-    g.addEdge("z", "y");
-    g.addEdge("z", "w");
     g.addEdge("s", "z");
     g.addEdge("s", "w");
-    g.addEdge("t", "v");
-    g.addEdge("t", "u");
+    g.addEdge("z", "y");
+    g.addEdge("z", "w");
+    g.addEdge("y", "x");
     g.addEdge("x", "z");
     g.addEdge("w", "x");
+    g.addEdge("t", "v");
+    g.addEdge("t", "u");
     g.addEdge("v", "s");
     g.addEdge("v", "w");
-    g.addEdge("u", "t");
     g.addEdge("u", "v");
+    g.addEdge("u", "t");
 
     std::cout << "BEFORE DFS\n";
     printMyGraph(g, std::cout);
