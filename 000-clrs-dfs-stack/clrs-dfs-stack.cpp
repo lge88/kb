@@ -9,9 +9,10 @@
 #include <unordered_set>
 #include <iterator>
 #include <algorithm>
+#include <functional>
 
-template <typename VertexStateType, typename GraphStateType = int,
-          typename VertexIdType = std::string, typename EdgeStateType = int>
+template <typename GraphStateType, typename VertexStateType,
+          typename EdgeStateType, typename VertexIdType = std::string>
 class Graph {
  public:
   typedef typename std::vector<VertexIdType>::const_iterator VertexIterator;
@@ -32,14 +33,24 @@ class Graph {
     return adj_.find(u) != adj_.end();
   }
 
-  // Caller is responsible to make sure u is in the graph.
+  // Caller is responsible to make sure vertex u is in the graph.
   const VertexStateType& getVertexState(const VertexIdType& u) const {
     return vertexStateMap_.find(u)->second;
   }
 
-  // Caller is responsible to make sure u is in the graph.
+  // Caller is responsible to make sure vertex u is in the graph.
   VertexStateType& getMutableVertexState(const VertexIdType& u) {
     return vertexStateMap_.find(u)->second;
+  }
+
+  // Caller is responsible to make sure edge (u, v) is in the graph.
+  const EdgeStateType& getEdgeState(const VertexIdType& u, const VertexIdType& v) const {
+    return edgeStateMap_.find(u)->second.find(v)->second;
+  }
+
+  // Caller is responsible to make sure edge (u, v) is in the graph.
+  EdgeStateType& getMutableEdgeState(const VertexIdType& u, const VertexIdType& v) {
+    return edgeStateMap_.find(u)->second.find(v)->second;
   }
 
   const GraphStateType& getState() const {
@@ -50,10 +61,17 @@ class Graph {
     return state_;
   }
 
-  // Return false if u or v is not a vertex in the graph.
+  bool hasEdge(const VertexIdType& u, const VertexIdType& v) const {
+    return edgeStateMap_.find(u) != edgeStateMap_.end()
+        && edgeStateMap_.find(u)->second.find(v) != edgeStateMap_.find(u)->second.end();
+  }
+
+  // Return false if u or v is not a vertex in the graph or (u, v)
+  // already in the graph.
   bool addEdge(const VertexIdType& u, const VertexIdType& v) {
-    if (!hasVertex(u) || !hasVertex(v)) return false;
+    if (!hasVertex(u) || !hasVertex(v) || hasEdge(u, v)) return false;
     adj_[u].push_back(v);
+    edgeStateMap_[u][v] = EdgeStateType();
     return true;
   }
 
@@ -75,17 +93,26 @@ class Graph {
     return adj_.find(u)->second.end();
   }
 
- // private:
+ private:
   std::vector<VertexIdType> vertices_;
   std::unordered_map<VertexIdType, std::vector<VertexIdType> > adj_;
 
   // States
   GraphStateType state_;
+
   std::unordered_map<VertexIdType, VertexStateType> vertexStateMap_;
 
-  // TODO: edge state map
-  // typedef std::tuple<VertexIdType, VertexIdType> EdgeIdType;
-  // std::unordered_map<EdgeIdType, EdgeStateType> edgeStateMap_;
+  // 2D hash map of edge states
+  std::unordered_map<
+    VertexIdType,
+    std::unordered_map<VertexIdType, EdgeStateType> > edgeStateMap_;
+};
+
+struct DfsGraphState {
+  int time_;
+  DfsGraphState() :
+      time_(0)
+  {}
 };
 
 struct DfsVertexState {
@@ -106,14 +133,23 @@ struct DfsVertexState {
   {}
 };
 
-struct DfsGraphState {
-  int time_;
-  DfsGraphState() :
-      time_(0)
+struct DfsEdgeState {
+  enum EdgeType {
+    UNKNOWN = 0,
+    TREE,
+    BACK,
+    FORWARD,
+    CROSS
+  };
+  EdgeType type_;
+  DfsEdgeState() :
+      type_(UNKNOWN)
   {}
 };
 
-typedef Graph<DfsVertexState, DfsGraphState> MyGraph;
+typedef std::string DfsVertexIdType;
+
+typedef Graph<DfsGraphState, DfsVertexState, DfsEdgeState, DfsVertexIdType> MyGraph;
 
 void printVertices(const MyGraph& g, std::ostream& out) {
   std::vector<std::string> colorToString(3);
@@ -128,16 +164,23 @@ void printVertices(const MyGraph& g, std::ostream& out) {
     const std::string& u = *uIter;
     const DfsVertexState& uState = g.getVertexState(u);
 
-    out << u;
-    out << ": color=" << colorToString[uState.color_];
+    out << u << ": {";
+    out << " color=" << colorToString[uState.color_];
     out << " prev=" << (uState.prev_ == "" ? "NULL" : uState.prev_);
     out << " d=" << uState.discoveredTime_;
     out << " f=" << uState.finishedTime_;
-    out << "\n";
+    out << " }\n";
   }
 }
 
 void printEdges(const MyGraph& g, std::ostream& out) {
+  std::vector<std::string> edgeTypeToString(5);
+  edgeTypeToString[0] = "UNKNOWN";
+  edgeTypeToString[1] = "TREE";
+  edgeTypeToString[2] = "BACK";
+  edgeTypeToString[3] = "FORWARD";
+  edgeTypeToString[4] = "CROSS";
+
   out << "Edges:\n";
   for (MyGraph::VertexIterator uIter = g.vertexBegin();
        uIter != g.vertexEnd();
@@ -147,7 +190,10 @@ void printEdges(const MyGraph& g, std::ostream& out) {
          vIter != g.adjEnd(u);
          ++vIter) {
       const std::string& v = *vIter;
-      out << u << " -> " << v << "\n";
+      const DfsEdgeState& eState = g.getEdgeState(u, v);
+      out << u << " -> " << v << ": {";
+      out << " type=" << edgeTypeToString[eState.type_];
+      out << " }\n";
     }
   }
 }
@@ -160,7 +206,6 @@ void printMyGraph(const MyGraph& g, std::ostream& out) {
 
 void dfsVisit(MyGraph& g, const std::string& s) {
   int& time = g.getMutableState().time_;
-
   DfsVertexState& sState = g.getMutableVertexState(s);
 
   time += 1;
@@ -172,29 +217,31 @@ void dfsVisit(MyGraph& g, const std::string& s) {
 
   while (!stack.empty()) {
     const std::string u = stack.back().first;
-    DfsVertexState& uState = g.getMutableVertexState(u);
     MyGraph::VertexIterator vIter = stack.back().second;
+    DfsVertexState& uState = g.getMutableVertexState(u);
     MyGraph::VertexIterator end = g.adjEnd(u);
 
     if (vIter != end) {
       const std::string v = *vIter;
       DfsVertexState& vState = g.getMutableVertexState(v);
+      DfsEdgeState& eState = g.getMutableEdgeState(u, v);
 
       if (vState.color_ == DfsVertexState::WHITE) {
-        std::cout << "Edge Classification: " << u << " -> " << v << " : Tree\n";
+        eState.type_ = DfsEdgeState::TREE;
         time += 1;
         vState.color_ = DfsVertexState::GRAY;
         vState.discoveredTime_ = time;
         vState.prev_ = u;
         stack.push_back(std::make_pair(v, g.adjBegin(v)));
-      } else if (vState.color_ == DfsVertexState::GRAY) {
-        std::cout << "Edge Classification: " << u << " -> " << v << " : Back\n";
-        ++stack.back().second;
       } else {
-        if (uState.discoveredTime_ < vState.discoveredTime_) {
-          std::cout << "Edge Classification: " << u << " -> " << v << " : Forward\n";
+        if (vState.color_ == DfsVertexState::GRAY) {
+          eState.type_ = DfsEdgeState::BACK;
         } else {
-          std::cout << "Edge Classification: " << u << " -> " << v << " : Cross\n";
+          if (uState.discoveredTime_ < vState.discoveredTime_) {
+            eState.type_ = DfsEdgeState::FORWARD;
+          } else {
+            eState.type_ = DfsEdgeState::CROSS;
+          }
         }
         ++stack.back().second;
       }
@@ -233,7 +280,7 @@ void dfs(MyGraph& g) {
 }
 
 int main(int argc, char* argv[]) {
-  if (false) {
+  if (true) {
     // clrs Figure 22.4, page 605
     MyGraph g;
     g.addVertex("u");
@@ -263,7 +310,7 @@ int main(int argc, char* argv[]) {
     printMyGraph(g, std::cout);
   }
 
-  if (true) {
+  if (false) {
     // clrs Figure 22.5(a), page 607
     MyGraph g;
     g.addVertex("s");
