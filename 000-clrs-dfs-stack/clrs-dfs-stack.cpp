@@ -14,6 +14,8 @@ template <typename VertexStateType, typename GraphStateType = int,
           typename VertexIdType = std::string, typename EdgeStateType = int>
 class Graph {
  public:
+  typedef typename std::vector<VertexIdType>::const_iterator VertexIterator;
+
   Graph() {}
 
   // Return false if u is already in graph
@@ -55,18 +57,25 @@ class Graph {
     return true;
   }
 
-  // Return a const reference of vertices. TODO: Ideally should return
-  // a iterator.
-  const std::vector<VertexIdType>& vertices() const {
-    return vertices_;
+  // Return a iterator of all vertices.
+  VertexIterator vertexBegin() const {
+    return vertices_.begin();
+  }
+
+  VertexIterator vertexEnd() const {
+    return vertices_.end();
   }
 
   // Caller is responsible to make sure u is in the graph.
-  const std::vector<VertexIdType>& adj(const std::string& u) const {
-    return adj_.find(u)->second;
+  VertexIterator adjBegin(const std::string& u) const {
+    return adj_.find(u)->second.begin();
   }
 
- private:
+  VertexIterator adjEnd(const std::string& u) const {
+    return adj_.find(u)->second.end();
+  }
+
+ // private:
   std::vector<VertexIdType> vertices_;
   std::unordered_map<VertexIdType, std::vector<VertexIdType> > adj_;
 
@@ -113,10 +122,10 @@ void printVertices(const MyGraph& g, std::ostream& out) {
   colorToString[2] = "BLACK";
 
   out << "Vertice:\n";
-
-  const std::vector<std::string>& vertices = g.vertices();
-  for (size_t i = 0; i < vertices.size(); ++i) {
-    const std::string& u = vertices[i];
+  for (MyGraph::VertexIterator uIter = g.vertexBegin();
+       uIter != g.vertexEnd();
+       ++uIter) {
+    const std::string& u = *uIter;
     const DfsVertexState& uState = g.getVertexState(u);
 
     out << u;
@@ -130,15 +139,14 @@ void printVertices(const MyGraph& g, std::ostream& out) {
 
 void printEdges(const MyGraph& g, std::ostream& out) {
   out << "Edges:\n";
-
-  const std::vector<std::string>& vertices = g.vertices();
-  for (size_t i = 0; i < vertices.size(); ++i) {
-    const std::string& u = vertices[i];
-    const std::vector<std::string>& neighbors = g.adj(u);
-    for (std::vector<std::string>::const_iterator it = neighbors.begin();
-         it != neighbors.end();
-         ++it) {
-      const std::string& v = *it;
+  for (MyGraph::VertexIterator uIter = g.vertexBegin();
+       uIter != g.vertexEnd();
+       ++uIter) {
+    const std::string& u = *uIter;
+    for (MyGraph::VertexIterator vIter = g.adjBegin(u);
+         vIter != g.adjEnd(u);
+         ++vIter) {
+      const std::string& v = *vIter;
       out << u << " -> " << v << "\n";
     }
   }
@@ -160,16 +168,16 @@ void dfsVisit(MyGraph& g, const std::string& s) {
   sState.discoveredTime_ = time;
 
   std::vector<std::pair<std::string, std::vector<std::string>::const_iterator> > stack;
-  stack.push_back(std::make_pair(s, g.adj(s).begin()));
+  stack.push_back(std::make_pair(s, g.adjBegin(s)));
 
   while (!stack.empty()) {
     const std::string u = stack.back().first;
     DfsVertexState& uState = g.getMutableVertexState(u);
-    std::vector<std::string>::const_iterator& it = stack.back().second;
-    const std::vector<std::string>& neighbors = g.adj(u);
+    MyGraph::VertexIterator vIter = stack.back().second;
+    MyGraph::VertexIterator end = g.adjEnd(u);
 
-    if (it != neighbors.end()) {
-      const std::string v = *it;
+    if (vIter != end) {
+      const std::string v = *vIter;
       DfsVertexState& vState = g.getMutableVertexState(v);
 
       if (vState.color_ == DfsVertexState::WHITE) {
@@ -178,33 +186,33 @@ void dfsVisit(MyGraph& g, const std::string& s) {
         vState.color_ = DfsVertexState::GRAY;
         vState.discoveredTime_ = time;
         vState.prev_ = u;
-        stack.push_back(std::make_pair(v, g.adj(v).begin()));
+        stack.push_back(std::make_pair(v, g.adjBegin(v)));
       } else if (vState.color_ == DfsVertexState::GRAY) {
         std::cout << "Edge Classification: " << u << " -> " << v << " : Back\n";
-        ++it;
+        ++stack.back().second;
       } else {
         if (uState.discoveredTime_ < vState.discoveredTime_) {
           std::cout << "Edge Classification: " << u << " -> " << v << " : Forward\n";
         } else {
           std::cout << "Edge Classification: " << u << " -> " << v << " : Cross\n";
         }
-        ++it;
+        ++stack.back().second;
       }
     } else {
       time += 1;
       uState.color_ = DfsVertexState::BLACK;
       uState.finishedTime_ = time;
       stack.pop_back();
-      // advance parent iterator
       if (!stack.empty()) ++stack.back().second;
     }
   }
 }
 
 void dfs(MyGraph& g) {
-  const std::vector<std::string>& vertices = g.vertices();
-  for (size_t i = 0; i < vertices.size(); ++i) {
-    const std::string& u = vertices[i];
+  for (MyGraph::VertexIterator uIter = g.vertexBegin();
+       uIter != g.vertexEnd();
+       ++uIter) {
+    const std::string& u = *uIter;
     DfsVertexState& uState = g.getMutableVertexState(u);
     uState.color_ = DfsVertexState::WHITE;
     uState.prev_ = "";
@@ -213,8 +221,10 @@ void dfs(MyGraph& g) {
   int& time = g.getMutableState().time_;
 
   time = 0;
-  for (size_t i = 0; i < vertices.size(); ++i) {
-    const std::string& s = vertices[i];
+  for (MyGraph::VertexIterator sIter = g.vertexBegin();
+       sIter != g.vertexEnd();
+       ++sIter) {
+    const std::string& s = *sIter;
     const DfsVertexState& sState = g.getVertexState(s);
     if (sState.color_ == DfsVertexState::WHITE) {
       dfsVisit(g, s);
