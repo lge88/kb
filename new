@@ -70,4 +70,8 @@ $problem_name: $problem_name.cpp
 	g++ -std=c++11 \$^ -o \$@
 MAKEFILE_EOF
 
+cat <<README_EOF >$dest_dir/README.md
+# $problem_name
+README_EOF
+
 (cd $dest_dir; pwd; make)
