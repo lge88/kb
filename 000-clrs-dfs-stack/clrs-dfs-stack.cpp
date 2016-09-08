@@ -4,6 +4,7 @@
 
 #include "000-clrs-graph-template-v1/Graph.hh"
 #include "000-clrs-graph-template-v1/GraphTextIO.hh"
+#include "000-clrs-graph-template-v1/GraphBuilder.hh"
 
 struct DfsGraphState {
   int time_;
@@ -79,6 +80,7 @@ std::ostream& operator<<(std::ostream& to, const DfsEdgeState& s) {
 typedef std::string DfsVertexIdType;
 typedef Graph<DfsGraphState, DfsVertexState, DfsEdgeState, DfsVertexIdType> MyGraph;
 typedef GraphTextIO<DfsGraphState, DfsVertexState, DfsEdgeState, DfsVertexIdType> MyGraphTextIO;
+typedef GraphBuilder<DfsGraphState, DfsVertexState, DfsEdgeState, DfsVertexIdType> MyGraphBuilder;
 
 void dfsVisit(MyGraph& g, const std::string& s) {
   int& time = g.getMutableState().time_;
@@ -158,23 +160,7 @@ void dfs(MyGraph& g) {
 int main(int argc, char* argv[]) {
   if (true) {
     // clrs Figure 22.4, page 605
-    MyGraph g;
-    g.addVertex("u");
-    g.addVertex("v");
-    g.addVertex("w");
-    g.addVertex("x");
-    g.addVertex("y");
-    g.addVertex("z");
-
-    g.addEdge("u", "v");
-    g.addEdge("u", "x");
-    g.addEdge("v", "y");
-    g.addEdge("w", "y");
-    g.addEdge("w", "z");
-    g.addEdge("x", "v");
-    g.addEdge("y", "x");
-    g.addEdge("z", "z");
-
+    MyGraph g = MyGraphBuilder::clrs_22_4();
     MyGraphTextIO io(g);
 
     std::cout << "BEFORE DFS\n";
@@ -190,30 +176,7 @@ int main(int argc, char* argv[]) {
 
   if (true) {
     // clrs Figure 22.5(a), page 607
-    MyGraph g;
-    g.addVertex("s");
-    g.addVertex("z");
-    g.addVertex("y");
-    g.addVertex("x");
-    g.addVertex("w");
-    g.addVertex("t");
-    g.addVertex("v");
-    g.addVertex("u");
-
-    g.addEdge("s", "z");
-    g.addEdge("s", "w");
-    g.addEdge("z", "y");
-    g.addEdge("z", "w");
-    g.addEdge("y", "x");
-    g.addEdge("x", "z");
-    g.addEdge("w", "x");
-    g.addEdge("t", "v");
-    g.addEdge("t", "u");
-    g.addEdge("v", "s");
-    g.addEdge("v", "w");
-    g.addEdge("u", "v");
-    g.addEdge("u", "t");
-
+    MyGraph g = MyGraphBuilder::clrs_22_5_a();
     MyGraphTextIO io(g);
 
     std::cout << "BEFORE DFS\n";
@@ -226,5 +189,6 @@ int main(int argc, char* argv[]) {
     io.writeDebug(std::cout);
     std::cout << "\n";
   }
+
   return 0;
 }
