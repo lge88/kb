@@ -38,12 +38,22 @@ using namespace std;
 
 class Solution {
  public:
-
+  int solve(int x) {
+    return x;
+  }
 };
 
-int main(int argc, char* argv[]) {
+void test(int x) {
   Solution sol;
-  cout << "Hello world\n";
+  cout << "x: " << x << "\n";
+  cout << "result: " << sol.solve(x) << "\n";
+}
+
+int main(int argc, char* argv[]) {
+  {
+    int x = 42;
+    test(x);
+  }
   return 0;
 }
 BOILERPLATE_EOF
@@ -54,10 +64,10 @@ GITIGNORE_EOF
 
 cat <<MAKEFILE_EOF >$dest_dir/Makefile
 run: $problem_name
-	@./$problem_name
+	./$problem_name
 
 $problem_name: $problem_name.cpp
-	@g++ -std=c++11 \$^ -o \$@
+	g++ -std=c++11 \$^ -o \$@
 MAKEFILE_EOF
 
 (cd $dest_dir; pwd; make)
