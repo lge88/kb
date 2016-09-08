@@ -146,47 +146,43 @@ void dfsVisit(MyGraph& g, int& time, const std::string& s) {
   sObj.state_.color_ = DfsState::GRAY;
   sObj.state_.discoveredTime_ = time;
 
-  std::vector<std::string> stack;
-  stack.push_back(s);
+  std::vector<std::pair<std::string, std::set<std::string>::const_iterator> > stack;
+  stack.push_back(std::make_pair(s, g.adj(s).begin()));
 
   while (!stack.empty()) {
-    const std::string u = stack.back();
+    const std::string u = stack.back().first;
     MyGraph::V& uObj = g.getMutableVertex(u);
-    bool done = true;
-    std::cout << "time: " << time << ", u: " << u << "\n";
-
+    std::set<std::string>::const_iterator& it = stack.back().second;
     const std::set<std::string>& neighbors = g.adj(u);
-    for (std::set<std::string>::const_iterator it = neighbors.begin();
-         it != neighbors.end();
-         ++it) {
+
+    if (it != neighbors.end()) {
       const std::string v = *it;
       MyGraph::V& vObj = g.getMutableVertex(v);
       if (vObj.state_.color_ == DfsState::WHITE) {
+        std::cout << "Edge Classification: " << u << " -> " << v << " : Tree\n";
         time += 1;
         vObj.state_.color_ = DfsState::GRAY;
         vObj.state_.discoveredTime_ = time;
         vObj.state_.prev_ = u;
-        stack.push_back(v);
-        done = false;
-        std::cout << "Edge Classification: " << u << " -> " << v << " : Tree\n";
-        break;
+        stack.push_back(std::make_pair(v, g.adj(v).begin()));
       } else if (vObj.state_.color_ == DfsState::GRAY) {
         std::cout << "Edge Classification: " << u << " -> " << v << " : Back\n";
+        ++it;
       } else {
-        if (vObj.state_.prev_ == u) continue; // just poped
         if (uObj.state_.discoveredTime_ < vObj.state_.discoveredTime_) {
           std::cout << "Edge Classification: " << u << " -> " << v << " : Forward\n";
         } else {
           std::cout << "Edge Classification: " << u << " -> " << v << " : Cross\n";
         }
+        ++it;
       }
-    }
-
-    if (done) {
+    } else {
       time += 1;
       uObj.state_.color_ = DfsState::BLACK;
       uObj.state_.finishedTime_ = time;
       stack.pop_back();
+      // advance parent iterator
+      if (!stack.empty()) ++stack.back().second;
     }
   }
 }
@@ -211,32 +207,69 @@ void dfs(MyGraph& g) {
 }
 
 int main(int argc, char* argv[]) {
-  MyGraph g;
-  g.addVertex("u");
-  g.addVertex("v");
-  g.addVertex("w");
-  g.addVertex("x");
-  g.addVertex("y");
-  g.addVertex("z");
+  {
+    MyGraph g;
+    g.addVertex("u");
+    g.addVertex("v");
+    g.addVertex("w");
+    g.addVertex("x");
+    g.addVertex("y");
+    g.addVertex("z");
 
-  g.addEdge("u", "v");
-  g.addEdge("u", "x");
-  g.addEdge("v", "y");
-  g.addEdge("w", "y");
-  g.addEdge("w", "z");
-  g.addEdge("x", "v");
-  g.addEdge("y", "x");
-  g.addEdge("z", "z");
+    g.addEdge("u", "v");
+    g.addEdge("u", "x");
+    g.addEdge("v", "y");
+    g.addEdge("w", "y");
+    g.addEdge("w", "z");
+    g.addEdge("x", "v");
+    g.addEdge("y", "x");
+    g.addEdge("z", "z");
 
-  std::cout << "BEFORE DFS\n";
-  printMyGraph(g, std::cout);
-  std::cout << "\n";
+    std::cout << "BEFORE DFS\n";
+    printMyGraph(g, std::cout);
+    std::cout << "\n";
 
-  dfs(g);
-  std::cout << "\n";
+    dfs(g);
+    std::cout << "\n";
 
-  std::cout << "AFTER DFS\n";
-  printMyGraph(g, std::cout);
+    std::cout << "AFTER DFS\n";
+    printMyGraph(g, std::cout);
+  }
 
+  {
+    MyGraph g;
+    g.addVertex("y");
+    g.addVertex("z");
+    g.addVertex("s");
+    g.addVertex("t");
+    g.addVertex("x");
+    g.addVertex("w");
+    g.addVertex("v");
+    g.addVertex("u");
+
+    g.addEdge("y", "x");
+    g.addEdge("z", "y");
+    g.addEdge("z", "w");
+    g.addEdge("s", "z");
+    g.addEdge("s", "w");
+    g.addEdge("t", "v");
+    g.addEdge("t", "u");
+    g.addEdge("x", "z");
+    g.addEdge("w", "x");
+    g.addEdge("v", "s");
+    g.addEdge("v", "w");
+    g.addEdge("u", "t");
+    g.addEdge("u", "v");
+
+    std::cout << "BEFORE DFS\n";
+    printMyGraph(g, std::cout);
+    std::cout << "\n";
+
+    dfs(g);
+    std::cout << "\n";
+
+    std::cout << "AFTER DFS\n";
+    printMyGraph(g, std::cout);
+  }
   return 0;
 }

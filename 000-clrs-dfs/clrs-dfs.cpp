@@ -194,32 +194,70 @@ void dfs(Graph& g) {
 }
 
 int main(int argc, char* argv[]) {
-  Graph g;
-  g.addVertex("u");
-  g.addVertex("v");
-  g.addVertex("w");
-  g.addVertex("x");
-  g.addVertex("y");
-  g.addVertex("z");
+  {
+    Graph g;
+    g.addVertex("u");
+    g.addVertex("v");
+    g.addVertex("w");
+    g.addVertex("x");
+    g.addVertex("y");
+    g.addVertex("z");
 
-  g.addEdge("u", "v");
-  g.addEdge("u", "x");
-  g.addEdge("v", "y");
-  g.addEdge("w", "y");
-  g.addEdge("w", "z");
-  g.addEdge("x", "v");
-  g.addEdge("y", "x");
-  g.addEdge("z", "z");
+    g.addEdge("u", "v");
+    g.addEdge("u", "x");
+    g.addEdge("v", "y");
+    g.addEdge("w", "y");
+    g.addEdge("w", "z");
+    g.addEdge("x", "v");
+    g.addEdge("y", "x");
+    g.addEdge("z", "z");
 
-  std::cout << "BEFORE DFS\n";
-  g.print(std::cout);
-  std::cout << "\n";
+    std::cout << "BEFORE DFS\n";
+    g.print(std::cout);
+    std::cout << "\n";
 
-  dfs(g);
-  std::cout << "\n";
+    dfs(g);
+    std::cout << "\n";
 
-  std::cout << "AFTER DFS\n";
-  g.print(std::cout);
+    std::cout << "AFTER DFS\n";
+    g.print(std::cout);
+  }
+
+  {
+    Graph g;
+    g.addVertex("y");
+    g.addVertex("z");
+    g.addVertex("s");
+    g.addVertex("t");
+    g.addVertex("x");
+    g.addVertex("w");
+    g.addVertex("v");
+    g.addVertex("u");
+
+    g.addEdge("y", "x");
+    g.addEdge("z", "y");
+    g.addEdge("z", "w");
+    g.addEdge("s", "z");
+    g.addEdge("s", "w");
+    g.addEdge("t", "v");
+    g.addEdge("t", "u");
+    g.addEdge("x", "z");
+    g.addEdge("w", "x");
+    g.addEdge("v", "s");
+    g.addEdge("v", "w");
+    g.addEdge("u", "t");
+    g.addEdge("u", "v");
+
+    std::cout << "BEFORE DFS\n";
+    g.print(std::cout);
+    std::cout << "\n";
+
+    dfs(g);
+    std::cout << "\n";
+
+    std::cout << "AFTER DFS\n";
+    g.print(std::cout);
+  }
 
   return 0;
 }
