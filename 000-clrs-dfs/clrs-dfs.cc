@@ -66,32 +66,26 @@ int main(int argc, char* argv[]) {
     // clrs Figure 22.4, page 605
     DfsGraph g = DfsGraphBuilder::clrs_22_4();
     DfsGraphTextIO io(g);
+    io.debug_ = true;
 
-    std::cout << "BEFORE DFS\n";
-    io.writeDebug(std::cout);
-    std::cout << "\n";
+    std::cout << "BEFORE DFS:\n" << io << "\n";
 
     dfs(g);
 
-    std::cout << "AFTER DFS\n";
-    io.writeDebug(std::cout);
-    std::cout << "\n";
+    std::cout << "AFTER DFS:\n" << io << "\n";
   }
 
   if (true) {
     // clrs Figure 22.5(a), page 607
     DfsGraph g = DfsGraphBuilder::clrs_22_5_a();
     DfsGraphTextIO io(g);
+    io.debug_ = true;
 
-    std::cout << "BEFORE DFS\n";
-    io.writeDebug(std::cout);
-    std::cout << "\n";
+    std::cout << "BEFORE DFS:\n" << io << "\n";
 
     dfs(g);
 
-    std::cout << "AFTER DFS\n";
-    io.writeDebug(std::cout);
-    std::cout << "\n";
+    std::cout << "AFTER DFS:\n" << io << "\n";
   }
 
   return 0;
