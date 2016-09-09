@@ -10,6 +10,7 @@ class GraphTextIO {
 
  public:
   bool debug_;
+  bool shouldWriteEdge_;
 
  private:
   const char* sep_ = (isDirected_ ? " -> " : " - ");
@@ -18,6 +19,7 @@ class GraphTextIO {
  public:
   GraphTextIO(GraphType& g) :
       debug_(false),
+      shouldWriteEdge_(true),
       g_(g)
   {}
 
@@ -66,7 +68,7 @@ class GraphTextIO {
       to << "Graph state: " << g_.getState() << "\n";
     }
     writeVertices(to);
-    writeEdges(to);
+    if (shouldWriteEdge_) writeEdges(to);
   }
 
   void readVertices(std::istream& from) {
