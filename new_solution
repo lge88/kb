@@ -68,6 +68,9 @@ run: $problem_name
 
 $problem_name: $problem_name.cpp
 	g++ -std=c++11 \$^ -o \$@
+
+clean:
+	rm $problem_name *.o
 MAKEFILE_EOF
 
 cat <<README_EOF >$dest_dir/README.md
