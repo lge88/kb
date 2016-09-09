@@ -22,7 +22,8 @@ typedef std::string DefaultVertexIdType;
 template <typename GraphStateType = DefaultGraphState,
           typename VertexStateType = DefaultVertexState,
           typename EdgeStateType = DefaultEdgeState,
-          typename VertexIdType = DefaultVertexIdType>
+          typename VertexIdType = DefaultVertexIdType,
+          bool directed = true>
 class Graph {
  public:
   typedef typename std::vector<VertexIdType>::const_iterator VertexIterator;
@@ -30,6 +31,7 @@ class Graph {
   typedef VertexStateType VertexState;
   typedef EdgeStateType EdgeState;
   typedef VertexIdType VertexId;
+  static const bool isDirected = directed;
 
   Graph() :
       numEdges_(0U)

@@ -6,31 +6,33 @@
 template <typename GraphType = Graph<> >
 class GraphTextIO {
  public:
+  bool debug_;
 
   GraphTextIO(GraphType& g) :
-      g_(g)
+      g_(g),
+      debug_(false)
   {}
 
-  void writeVertices(std::ostream& to, bool debug = false) const {
-    if (debug == true) to << "Number of vertices: ";
+  void writeVertices(std::ostream& to) const {
+    if (debug_ == true) to << "Number of vertices: ";
     to << g_.numVertices() << "\n";
-    if (debug == true) to << "Vertices:\n";
+    if (debug_ == true) to << "Vertices:\n";
     for (typename GraphType::VertexIterator uIter = g_.vertexBegin();
          uIter != g_.vertexEnd();
          ++uIter) {
       const typename GraphType::VertexId& u = *uIter;
       to << u;
-      if (debug == true) {
+      if (debug_ == true) {
         to << ": " << g_.getVertexState(u);
       }
       to << "\n";
     }
   }
 
-  void writeEdges(std::ostream& to, bool debug = false) const {
-    if (debug == true) to << "Number of edges: ";
+  void writeEdges(std::ostream& to) const {
+    if (debug_ == true) to << "Number of edges: ";
     to << g_.numEdges() << "\n";
-    if (debug == true) to << "Edges:\n";
+    if (debug_ == true) to << "Edges:\n";
     for (typename GraphType::VertexIterator uIter = g_.vertexBegin();
          uIter != g_.vertexEnd();
          ++uIter) {
@@ -40,9 +42,9 @@ class GraphTextIO {
            ++vIter) {
         const typename GraphType::VertexId& v = *vIter;
         to << u
-           << (debug ? " -> " : "\t")
+           << (debug_ ? " -> " : "\t")
            << v;
-        if (debug == true) {
+        if (debug_ == true) {
           to << ": " << g_.getEdgeState(u, v);
         }
         to << "\n";
@@ -50,15 +52,10 @@ class GraphTextIO {
     }
   }
 
-  void write(std::ostream& to, bool debug = false) const {
-    writeVertices(to, debug);
-    writeEdges(to, debug);
-  }
-
-  void writeDebug(std::ostream& to) const {
-    to << "Graph state: " << g_.getState() << "\n";
-    writeVertices(to, true);
-    writeEdges(to, true);
+  void write(std::ostream& to) const {
+    if (debug_) to << "Graph state: " << g_.getState() << "\n";
+    writeVertices(to);
+    writeEdges(to);
   }
 
   void readVertices(std::istream& from) {
@@ -102,5 +99,17 @@ class GraphTextIO {
   GraphType& g_;
 
 };
+
+template <typename GraphType = Graph<> >
+std::ostream& operator<<(std::ostream& to, const GraphTextIO<GraphType>& io) {
+  io.write(to);
+  return to;
+}
+
+template <typename GraphType = Graph<> >
+std::istream& operator>>(std::istream& from, GraphTextIO<GraphType>& io) {
+  io.read(from);
+  return from;
+}
 
 #endif // GRAPH_TEXT_IO_HH
