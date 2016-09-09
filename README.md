@@ -5,6 +5,7 @@ Problems
 | ---- | ------ |
 | [000-clrs-dfs](https://github.com/lge88/lc/tree/master/000-clrs-dfs) |  |
 | [000-clrs-dfs-stack](https://github.com/lge88/lc/tree/master/000-clrs-dfs-stack) |  |
+| [000-clrs-graph-template-v1](https://github.com/lge88/lc/tree/master/000-clrs-graph-template-v1) |  |
 | [198-house-robber](https://github.com/lge88/lc/tree/master/198-house-robber) | https://leetcode.com/problems/house-robber |
 | [200-number-of-islands](https://github.com/lge88/lc/tree/master/200-number-of-islands) | https://leetcode.com/problems/number-of-islands |
 | [201-bitwise-and-of-numbers-range](https://github.com/lge88/lc/tree/master/201-bitwise-and-of-numbers-range) | https://leetcode.com/problems/bitwise-and-of-numbers-range |
