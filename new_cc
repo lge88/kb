@@ -17,7 +17,7 @@ problem_number=$1
 problem_name=$2
 
 dest_dir="$problem_number-$problem_name"
-dest_file="$dest_dir/$problem_name.cpp"
+dest_file="$dest_dir/$problem_name.cc"
 
 mkdir -p $dest_dir
 
