@@ -5,12 +5,20 @@
 
 template <typename GraphType = Graph<> >
 class GraphTextIO {
+ private:
+  static const bool isDirected_ = GraphType::isDirected_;
+
  public:
   bool debug_;
 
+ private:
+  const char* sep_ = (isDirected_ ? " -> " : " - ");
+  GraphType& g_;
+
+ public:
   GraphTextIO(GraphType& g) :
-      g_(g),
-      debug_(false)
+      debug_(false),
+      g_(g)
   {}
 
   void writeVertices(std::ostream& to) const {
@@ -42,7 +50,7 @@ class GraphTextIO {
            ++vIter) {
         const typename GraphType::VertexId& v = *vIter;
         to << u
-           << (debug_ ? " -> " : "\t")
+           << (debug_ ? sep_ : "\t")
            << v;
         if (debug_ == true) {
           to << ": " << g_.getEdgeState(u, v);
@@ -53,7 +61,10 @@ class GraphTextIO {
   }
 
   void write(std::ostream& to) const {
-    if (debug_) to << "Graph state: " << g_.getState() << "\n";
+    if (debug_) {
+      to << "Graph isDirected: " << g_.isDirected() << "\n";
+      to << "Graph state: " << g_.getState() << "\n";
+    }
     writeVertices(to);
     writeEdges(to);
   }
@@ -94,9 +105,6 @@ class GraphTextIO {
     readVertices(from);
     readEdges(from);
   }
-
- private:
-  GraphType& g_;
 
 };
 

@@ -31,11 +31,15 @@ class Graph {
   typedef VertexStateType VertexState;
   typedef EdgeStateType EdgeState;
   typedef VertexIdType VertexId;
-  static const bool isDirected = directed;
+  static const bool isDirected_ = directed;
 
   Graph() :
       numEdges_(0U)
   {}
+
+  bool isDirected() const {
+    return isDirected_;
+  }
 
   // Return false if u is already in graph
   bool addVertex(const VertexIdType& u) {
@@ -69,12 +73,20 @@ class Graph {
 
   // Caller is responsible to make sure edge (u, v) is in the graph.
   const EdgeStateType& getEdgeState(const VertexIdType& u, const VertexIdType& v) const {
-    return edgeStateMap_.find(u)->second.find(v)->second;
+    if (isDirected_) {
+      return edgeStateMap_.find(u)->second.find(v)->second;
+    } else {
+      return edgeStateMap_.find(std::min(u, v))->second.find(std::max(u, v))->second;
+    }
   }
 
   // Caller is responsible to make sure edge (u, v) is in the graph.
   EdgeStateType& getMutableEdgeState(const VertexIdType& u, const VertexIdType& v) {
-    return edgeStateMap_.find(u)->second.find(v)->second;
+    if (isDirected_) {
+      return edgeStateMap_.find(u)->second.find(v)->second;
+    } else {
+      return edgeStateMap_.find(std::min(u, v))->second.find(std::max(u, v))->second;
+    }
   }
 
   // Return a const graph state reference.
@@ -89,16 +101,30 @@ class Graph {
 
   // Return true if edge (u, v) is in the graph.
   bool hasEdge(const VertexIdType& u, const VertexIdType& v) const {
-    return edgeStateMap_.find(u) != edgeStateMap_.end()
-        && edgeStateMap_.find(u)->second.find(v) != edgeStateMap_.find(u)->second.end();
+    if (isDirected_) {
+      return edgeStateMap_.find(u) != edgeStateMap_.end()
+          && edgeStateMap_.find(u)->second.find(v) != edgeStateMap_.find(u)->second.end();
+    } else {
+      const VertexIdType a = std::min(u, v), b = std::max(u, v);
+      return edgeStateMap_.find(a) != edgeStateMap_.end()
+          && edgeStateMap_.find(a)->second.find(b) != edgeStateMap_.find(a)->second.end();
+    }
   }
 
   // Return false if u or v is not a vertex in the graph or (u, v)
   // already in the graph.
   bool addEdge(const VertexIdType& u, const VertexIdType& v) {
     if (!hasVertex(u) || !hasVertex(v) || hasEdge(u, v)) return false;
-    adj_[u].push_back(v);
-    edgeStateMap_[u][v] = EdgeStateType();
+
+    if (isDirected_) {
+      adj_[u].push_back(v);
+      edgeStateMap_[u][v] = EdgeStateType();
+    } else {
+      adj_[u].push_back(v);
+      adj_[v].push_back(u);
+      edgeStateMap_[std::min(u, v)][std::max(u, v)] = EdgeStateType();
+    }
+
     ++numEdges_;
     return true;
   }
@@ -143,5 +169,17 @@ class Graph {
     VertexIdType,
     std::unordered_map<VertexIdType, EdgeStateType> > edgeStateMap_;
 };
+
+template <typename GraphStateType = DefaultGraphState,
+          typename VertexStateType = DefaultVertexState,
+          typename EdgeStateType = DefaultEdgeState,
+          typename VertexIdType = DefaultVertexIdType>
+using DirectedGraph = Graph<GraphStateType, VertexStateType, EdgeStateType, VertexIdType, true>;
+
+template <typename GraphStateType = DefaultGraphState,
+          typename VertexStateType = DefaultVertexState,
+          typename EdgeStateType = DefaultEdgeState,
+          typename VertexIdType = DefaultVertexIdType>
+using UndirectedGraph = Graph<GraphStateType, VertexStateType, EdgeStateType, VertexIdType, false>;
 
 #endif // GRAPH_HH

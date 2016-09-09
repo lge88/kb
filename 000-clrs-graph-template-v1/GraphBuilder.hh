@@ -6,6 +6,30 @@
 template <typename GraphType = Graph<> >
 class GraphBuilder {
  public:
+  // clrs Figure 22.3, page 596
+  static GraphType clrs_22_3() {
+    GraphType g;
+    g.addVertex("r");
+    g.addVertex("s");
+    g.addVertex("t");
+    g.addVertex("u");
+    g.addVertex("v");
+    g.addVertex("w");
+    g.addVertex("x");
+    g.addVertex("y");
+
+    g.addEdge("r", "s");
+    g.addEdge("r", "v");
+    g.addEdge("s", "w");
+    g.addEdge("t", "w");
+    g.addEdge("t", "x");
+    g.addEdge("t", "u");
+    g.addEdge("u", "x");
+    g.addEdge("u", "y");
+    g.addEdge("w", "x");
+    g.addEdge("x", "y");
+    return g;
+  }
 
   // clrs Figure 22.4, page 605
   static GraphType clrs_22_4() {
