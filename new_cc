@@ -66,7 +66,7 @@ cat <<MAKEFILE_EOF >$dest_dir/Makefile
 run: $problem_name
 	./$problem_name
 
-$problem_name: $problem_name.cpp
+$problem_name: $problem_name.cc
 	g++ -std=c++11 \$^ -o \$@
 
 clean:
