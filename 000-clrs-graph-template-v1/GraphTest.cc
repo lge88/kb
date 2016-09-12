@@ -27,6 +27,12 @@ TEST_CASE( "Directed graph", "[DirectedGraph]" ) {
     REQUIRE(g.numVertices() == 6);
   }
 
+  SECTION("getState() && getMutableState()") {
+    REQUIRE(g.getState() == "");
+    g.getMutableState() = "state 123";
+    REQUIRE(g.getState() == "state 123");
+  }
+
   SECTION("getVertexState() && getMutableVertexState()") {
     g.getMutableVertexState("u") = "u state 123";
     REQUIRE(g.getVertexState("u") == "u state 123");
@@ -132,6 +138,12 @@ TEST_CASE( "Undirected graph", "[UndirectedGraph]" ) {
     g.getMutableVertexState("u") = "u state 123";
     REQUIRE(g.getVertexState("u") == "u state 123");
     REQUIRE(g.getVertexState("v") == "");
+  }
+
+  SECTION("getState() && getMutableState()") {
+    REQUIRE(g.getState() == "");
+    g.getMutableState() = "state 123";
+    REQUIRE(g.getState() == "state 123");
   }
 
   SECTION("getEdgeState() && getMutableEdgeState()") {
