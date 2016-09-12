@@ -63,29 +63,29 @@ class Graph {
 
   // Caller is responsible to make sure vertex u is in the graph.
   const VertexStateType& getVertexState(const VertexIdType& u) const {
-    return vertexStateMap_.find(u)->second;
+    return vertexStateMap_.at(u);
   }
 
   // Caller is responsible to make sure vertex u is in the graph.
   VertexStateType& getMutableVertexState(const VertexIdType& u) {
-    return vertexStateMap_.find(u)->second;
+    return vertexStateMap_.at(u);
   }
 
   // Caller is responsible to make sure edge (u, v) is in the graph.
   const EdgeStateType& getEdgeState(const VertexIdType& u, const VertexIdType& v) const {
     if (isDirected_) {
-      return edgeStateMap_.find(u)->second.find(v)->second;
+      return edgeStateMap_.at(u).at(v);
     } else {
-      return edgeStateMap_.find(std::min(u, v))->second.find(std::max(u, v))->second;
+      return edgeStateMap_.at(std::min(u, v)).at(std::max(u, v));
     }
   }
 
   // Caller is responsible to make sure edge (u, v) is in the graph.
   EdgeStateType& getMutableEdgeState(const VertexIdType& u, const VertexIdType& v) {
     if (isDirected_) {
-      return edgeStateMap_.find(u)->second.find(v)->second;
+      return edgeStateMap_.at(u).at(v);
     } else {
-      return edgeStateMap_.find(std::min(u, v))->second.find(std::max(u, v))->second;
+      return edgeStateMap_.at(std::min(u, v)).at(std::max(u, v));
     }
   }
 

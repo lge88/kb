@@ -37,12 +37,21 @@ TEST_CASE( "Directed graph", "[DirectedGraph]" ) {
     g.getMutableVertexState("u") = "u state 123";
     REQUIRE(g.getVertexState("u") == "u state 123");
     REQUIRE(g.getVertexState("v") == "");
+
+    REQUIRE_THROWS(g.getVertexState("a"));
+    REQUIRE_THROWS(g.getMutableVertexState("a"));
   }
 
   SECTION("getEdgeState() && getMutableEdgeState()") {
     g.getMutableEdgeState("u", "v") = "u -> v state 123";
     REQUIRE(g.getEdgeState("u", "v") == "u -> v state 123");
     REQUIRE(g.getEdgeState("v", "y") == "");
+
+    REQUIRE_THROWS(g.getEdgeState("a", "u"));
+    REQUIRE_THROWS(g.getMutableEdgeState("a", "u"));
+
+    REQUIRE_THROWS(g.getEdgeState("v", "u"));
+    REQUIRE_THROWS(g.getMutableEdgeState("v", "u"));
   }
 
   SECTION("numEdges()") {
@@ -138,6 +147,8 @@ TEST_CASE( "Undirected graph", "[UndirectedGraph]" ) {
     g.getMutableVertexState("u") = "u state 123";
     REQUIRE(g.getVertexState("u") == "u state 123");
     REQUIRE(g.getVertexState("v") == "");
+    REQUIRE_THROWS(g.getVertexState("a"));
+    REQUIRE_THROWS(g.getMutableVertexState("a"));
   }
 
   SECTION("getState() && getMutableState()") {
@@ -150,6 +161,12 @@ TEST_CASE( "Undirected graph", "[UndirectedGraph]" ) {
     g.getMutableEdgeState("u", "t") = "u - t state 123";
     REQUIRE(g.getEdgeState("u", "t") == "u - t state 123");
     REQUIRE(g.getEdgeState("x", "y") == "");
+
+    REQUIRE_THROWS(g.getEdgeState("a", "u"));
+    REQUIRE_THROWS(g.getMutableEdgeState("a", "u"));
+
+    REQUIRE_THROWS(g.getEdgeState("v", "u"));
+    REQUIRE_THROWS(g.getMutableEdgeState("v", "u"));
   }
 
   SECTION("numEdges()") {
