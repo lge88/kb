@@ -6,7 +6,7 @@
 template <typename GraphType = Graph<> >
 class GraphBuilder {
  public:
-  // clrs Figure 22.3, page 596
+  // clrs Figure 22.3, page 596, undirected
   static GraphType clrs_22_3() {
     GraphType g;
     g.addVertex("r");
@@ -31,7 +31,7 @@ class GraphBuilder {
     return g;
   }
 
-  // clrs Figure 22.4, page 605
+  // clrs Figure 22.4, page 605, directed
   static GraphType clrs_22_4() {
     GraphType g;
     g.addVertex("u");
@@ -53,7 +53,7 @@ class GraphBuilder {
     return g;
   }
 
-  // clrs Figure 22.4, page 605
+  // clrs Figure 22.5(a), page 607, directed
   static GraphType clrs_22_5_a() {
     GraphType g;
     g.addVertex("s");
