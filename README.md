@@ -22,6 +22,9 @@ Problems
 | [211-add-and-search-word-data-structure-design](https://github.com/lge88/lc/tree/master/211-add-and-search-word-data-structure-design) | https://leetcode.com/problems/add-and-search-word-data-structure-design |
 | [212-word-search-ii](https://github.com/lge88/lc/tree/master/212-word-search-ii) | https://leetcode.com/problems/word-search-ii |
 | [213-house-robber-ii](https://github.com/lge88/lc/tree/master/213-house-robber-ii) | https://leetcode.com/problems/house-robber-ii |
-| [214-shortest-palindrome](https://github.com/lge88/lc/tree/master/214-shortest-palindrome) | https://leetcode.com/problems/shortest-palindrome |
+| [214-shortest-palindrome.tle](https://github.com/lge88/lc/tree/master/214-shortest-palindrome.tle) | https://leetcode.com/problems/shortest-palindrome |
+| [292-nim-game](https://github.com/lge88/lc/tree/master/292-nim-game) | https://leetcode.com/problems/nim-game |
+| [338-counting-bits](https://github.com/lge88/lc/tree/master/338-counting-bits) | https://leetcode.com/problems/counting-bits |
+| [344-reverse-string](https://github.com/lge88/lc/tree/master/344-reverse-string) | https://leetcode.com/problems/reverse-string |
 | [388-longest-absolute-file-path](https://github.com/lge88/lc/tree/master/388-longest-absolute-file-path) | https://leetcode.com/problems/longest-absolute-file-path |
 

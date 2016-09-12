@@ -67,7 +67,7 @@ run: $problem_name
 	./$problem_name
 
 $problem_name: $problem_name.cc
-	g++ -std=c++11 \$^ -o \$@
+	g++ -std=c++11 -g \$^ -o \$@
 
 clean:
 	rm $problem_name *.o
