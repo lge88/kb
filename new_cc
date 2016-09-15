@@ -60,6 +60,7 @@ BOILERPLATE_EOF
 
 cat <<GITIGNORE_EOF >$dest_dir/.gitignore
 $problem_name
+*.dSYM
 GITIGNORE_EOF
 
 cat <<MAKEFILE_EOF >$dest_dir/Makefile
