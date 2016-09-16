@@ -9,6 +9,7 @@
   "license": "MIT",
   "homepage": "https://github.com/lge88/lc#readme",
   "dependencies": {
-    "mustache": "^2.2.1"
+    "mustache": "^2.2.1",
+    "leetcode-cli": "*"
   }
 }
