@@ -18,12 +18,12 @@ class Solution {
       int k,
       int n,
       int sumSofar,
-      set<int>& path,
+      vector<int>& path,
       vector<vector<int> >& result) {
     if (path.size() > k) return;
     if (path.size() == k) {
       if (sumSofar == n) {
-        result.push_back(vector<int>(path.begin(), path.end()));
+        result.push_back(path);
         return;
       }
       return;
@@ -31,18 +31,18 @@ class Solution {
 
     if (sumSofar >= n) return;
 
-    for (int i = 0; i <= 9; ++i) {
-      if (path.empty() || i < (*path.begin())) {
-        path.insert(i);
+    for (int i = 1; i <= 9; ++i) {
+      if (path.empty() || i > path.back()) {
+        path.push_back(i);
         combinationSum3Helper(k, n, sumSofar + i, path, result);
-        path.erase(i);
+        path.pop_back();
       }
     }
   }
 
   vector<vector<int> > combinationSum3(int k, int n) {
     vector<vector<int> > result;
-    set<int> path;
+    vector<int> path;
     combinationSum3Helper(k, n, 0, path, result);
     return result;
   }
