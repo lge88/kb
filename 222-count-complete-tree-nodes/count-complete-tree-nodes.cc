@@ -22,9 +22,52 @@ struct TreeNode {
 
 class Solution {
  public:
+  bool testLeaf(TreeNode* root, int x, int h) {
+    int mask = 1 << (h - 1);
+    TreeNode* p = root;
+    while (mask >= 1) {
+      if (x & mask) {
+        p = p->right;
+      } else {
+        p = p->left;
+      }
+      mask >>= 1;
+    }
+    return p != NULL;
+  }
+
+  int findRightMost(TreeNode* root, int h) {
+    int low = 0, high = (1 << h) - 1;
+    int sofar = 0;
+    while (low <= high) {
+      int x = low + (high - low) / 2;
+      if (testLeaf(root, x, h)) {
+        // search right most  in [x+1, high]
+        sofar = x;
+        low = x + 1;
+      } else {
+        // right most is in [low, x-1]
+        high = x - 1;
+      }
+    }
+    return sofar;
+  }
+
   int countNodes(TreeNode* root) {
-    if (!root) return 0;
-    return 1 + countNodes(root->left) + countNodes(root->right);
+    // 1) Find the number of levels h. O(lgN)
+    // 2) User binary search find the right most leaf x, O(lg(lgN)*lgN)
+    // 3) return 1<<h + x
+    TreeNode* p = root;
+    if (p == NULL) return 0;
+
+    int h = 0;
+    while (p->left != NULL) {
+      p = p->left;
+      ++h;
+    }
+
+    int x = findRightMost(root, h);
+    return (1 << h) + x;
   }
 };
 
