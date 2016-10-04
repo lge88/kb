@@ -7,6 +7,8 @@ Problems
 | [000-clrs-dfs](https://github.com/lge88/lc/tree/master/000-clrs-dfs) |  |
 | [000-clrs-dfs-stack](https://github.com/lge88/lc/tree/master/000-clrs-dfs-stack) |  |
 | [000-clrs-graph-template-v1](https://github.com/lge88/lc/tree/master/000-clrs-graph-template-v1) |  |
+| [000-clrs-kmp](https://github.com/lge88/lc/tree/master/000-clrs-kmp) |  |
+| [000-external](https://github.com/lge88/lc/tree/master/000-external) |  |
 | [198-house-robber](https://github.com/lge88/lc/tree/master/198-house-robber) | https://leetcode.com/problems/house-robber |
 | [200-number-of-islands](https://github.com/lge88/lc/tree/master/200-number-of-islands) | https://leetcode.com/problems/number-of-islands |
 | [201-bitwise-and-of-numbers-range](https://github.com/lge88/lc/tree/master/201-bitwise-and-of-numbers-range) | https://leetcode.com/problems/bitwise-and-of-numbers-range |
@@ -22,9 +24,37 @@ Problems
 | [211-add-and-search-word-data-structure-design](https://github.com/lge88/lc/tree/master/211-add-and-search-word-data-structure-design) | https://leetcode.com/problems/add-and-search-word-data-structure-design |
 | [212-word-search-ii](https://github.com/lge88/lc/tree/master/212-word-search-ii) | https://leetcode.com/problems/word-search-ii |
 | [213-house-robber-ii](https://github.com/lge88/lc/tree/master/213-house-robber-ii) | https://leetcode.com/problems/house-robber-ii |
-| [214-shortest-palindrome.dp-n2-space](https://github.com/lge88/lc/tree/master/214-shortest-palindrome.dp-n2-space) | https://leetcode.com/problems/shortest-palindrome |
+| [214-shortest-palindrome.kmp](https://github.com/lge88/lc/tree/master/214-shortest-palindrome.kmp) | https://leetcode.com/problems/shortest-palindrome |
+| [214-shortest-palindrome.tle-dp-n2-space](https://github.com/lge88/lc/tree/master/214-shortest-palindrome.tle-dp-n2-space) | https://leetcode.com/problems/shortest-palindrome |
+| [214-shortest-palindrome.tle-n2](https://github.com/lge88/lc/tree/master/214-shortest-palindrome.tle-n2) | https://leetcode.com/problems/shortest-palindrome |
+| [215-kth-largest-element-in-an-array.ac-quickselect](https://github.com/lge88/lc/tree/master/215-kth-largest-element-in-an-array.ac-quickselect) | https://leetcode.com/problems/kth-largest-element-in-an-array |
+| [215-kth-largest-element-in-an-array.ac-radix-sort](https://github.com/lge88/lc/tree/master/215-kth-largest-element-in-an-array.ac-radix-sort) | https://leetcode.com/problems/kth-largest-element-in-an-array |
+| [216-combination-sum-iii](https://github.com/lge88/lc/tree/master/216-combination-sum-iii) | https://leetcode.com/problems/combination-sum-iii |
+| [217-contains-duplicate](https://github.com/lge88/lc/tree/master/217-contains-duplicate) | https://leetcode.com/problems/contains-duplicate |
+| [218-the-skyline-problem](https://github.com/lge88/lc/tree/master/218-the-skyline-problem) | https://leetcode.com/problems/the-skyline-problem |
+| [219-contains-duplicate-ii](https://github.com/lge88/lc/tree/master/219-contains-duplicate-ii) | https://leetcode.com/problems/contains-duplicate-ii |
+| [220-contains-duplicate-iii.bst](https://github.com/lge88/lc/tree/master/220-contains-duplicate-iii.bst) | https://leetcode.com/problems/contains-duplicate-iii |
+| [220-contains-duplicate-iii.bucket](https://github.com/lge88/lc/tree/master/220-contains-duplicate-iii.bucket) | https://leetcode.com/problems/contains-duplicate-iii |
+| [221-maximal-square](https://github.com/lge88/lc/tree/master/221-maximal-square) | https://leetcode.com/problems/maximal-square |
+| [222-count-complete-tree-nodes](https://github.com/lge88/lc/tree/master/222-count-complete-tree-nodes) | https://leetcode.com/problems/count-complete-tree-nodes |
+| [222-count-complete-tree-nodes.tle](https://github.com/lge88/lc/tree/master/222-count-complete-tree-nodes.tle) | https://leetcode.com/problems/count-complete-tree-nodes |
+| [223-rectangle-area](https://github.com/lge88/lc/tree/master/223-rectangle-area) | https://leetcode.com/problems/rectangle-area |
+| [224-basic-calculator](https://github.com/lge88/lc/tree/master/224-basic-calculator) | https://leetcode.com/problems/basic-calculator |
+| [224-basic-calculator.v2](https://github.com/lge88/lc/tree/master/224-basic-calculator.v2) | https://leetcode.com/problems/basic-calculator |
+| [225-implement-stack-using-queues.one-queue](https://github.com/lge88/lc/tree/master/225-implement-stack-using-queues.one-queue) | https://leetcode.com/problems/implement-stack-using-queues |
+| [225-implement-stack-using-queues.two-queues](https://github.com/lge88/lc/tree/master/225-implement-stack-using-queues.two-queues) | https://leetcode.com/problems/implement-stack-using-queues |
+| [226-invert-binary-tree](https://github.com/lge88/lc/tree/master/226-invert-binary-tree) | https://leetcode.com/problems/invert-binary-tree |
+| [227-basic-calculator-ii](https://github.com/lge88/lc/tree/master/227-basic-calculator-ii) | https://leetcode.com/problems/basic-calculator-ii |
+| [228-summary-ranges](https://github.com/lge88/lc/tree/master/228-summary-ranges) | https://leetcode.com/problems/summary-ranges |
+| [229-majority-element-ii](https://github.com/lge88/lc/tree/master/229-majority-element-ii) | https://leetcode.com/problems/majority-element-ii |
+| [230-kth-smallest-element-in-a-bst.augmented-bst](https://github.com/lge88/lc/tree/master/230-kth-smallest-element-in-a-bst.augmented-bst) | https://leetcode.com/problems/kth-smallest-element-in-a-bst |
+| [230-kth-smallest-element-in-a-bst.in-order-traverse](https://github.com/lge88/lc/tree/master/230-kth-smallest-element-in-a-bst.in-order-traverse) | https://leetcode.com/problems/kth-smallest-element-in-a-bst |
+| [231-power-of-two](https://github.com/lge88/lc/tree/master/231-power-of-two) | https://leetcode.com/problems/power-of-two |
+| [232-implement-queue-using-stacks](https://github.com/lge88/lc/tree/master/232-implement-queue-using-stacks) | https://leetcode.com/problems/implement-queue-using-stacks |
 | [292-nim-game](https://github.com/lge88/lc/tree/master/292-nim-game) | https://leetcode.com/problems/nim-game |
 | [338-counting-bits](https://github.com/lge88/lc/tree/master/338-counting-bits) | https://leetcode.com/problems/counting-bits |
 | [344-reverse-string](https://github.com/lge88/lc/tree/master/344-reverse-string) | https://leetcode.com/problems/reverse-string |
+| [371-sum-of-two-integers](https://github.com/lge88/lc/tree/master/371-sum-of-two-integers) | https://leetcode.com/problems/sum-of-two-integers |
 | [388-longest-absolute-file-path](https://github.com/lge88/lc/tree/master/388-longest-absolute-file-path) | https://leetcode.com/problems/longest-absolute-file-path |
+| [389-find-the-difference](https://github.com/lge88/lc/tree/master/389-find-the-difference) | https://leetcode.com/problems/find-the-difference |
 
