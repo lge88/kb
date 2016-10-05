@@ -69,7 +69,31 @@ void test(vector<int>& A) {
 
 int main(int argc, char* argv[]) {
   {
+    vector<int> A = { };
+    test(A);
+  }
+
+  {
+    vector<int> A = { 1 };
+    test(A);
+  }
+
+  {
     vector<int> A = { 1, 0, 3, 6, 7, 4, 15, 8, 10, 2 };
+    test(A);
+  }
+
+  {
+    vector<int> A = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    test(A);
+  }
+
+  {
+    vector<int> A = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+    test(A);
+  }
+  {
+    vector<int> A = { 9, 3, 6, -2, -4, 1, 0, 1 };
     test(A);
   }
   return 0;
