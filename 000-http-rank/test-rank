@@ -1,0 +1,10 @@
+#! /usr/bin/env node
+const request = require('request');
+
+request(
+  'http://localhost:8888/rank?k=3&v=45.55&v=1&v=23.0&v=67&v=88.2&v=0.6&v=4.452&v=56',
+  (error, response, body) => {
+    if (!error && response.statusCode == 200) {
+      console.log(body);
+    }
+});
