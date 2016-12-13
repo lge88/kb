@@ -33,6 +33,7 @@ cat <<'BOILERPLATE_EOF' >$dest_file
 #include <unordered_set>
 #include <iterator>
 #include <algorithm>
+#include <cassert>
 
 using namespace std;
 
@@ -43,16 +44,18 @@ class Solution {
   }
 };
 
-void test(int x) {
+void test(int x, int expected) {
   Solution sol;
   cout << "x: " << x << "\n";
-  cout << "result: " << sol.solve(x) << "\n";
+  int actual = sol.solve(x);
+  cout << "solve(x): " << actual << ", expected: " << expected << "\n\n";
+  assert(actual == expected);
 }
 
 int main(int argc, char* argv[]) {
   {
     int x = 42;
-    test(x);
+    test(x, 0);
   }
   return 0;
 }
