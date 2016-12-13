@@ -3,13 +3,18 @@ Problems
 
 | Name | Source |
 | ---- | ------ |
+| [000-binary-search](https://github.com/lge88/lc/tree/master/000-binary-search) |  |
 | [000-boundary-traversal-of-binary-tree](https://github.com/lge88/lc/tree/master/000-boundary-traversal-of-binary-tree) |  |
 | [000-clrs-bfs](https://github.com/lge88/lc/tree/master/000-clrs-bfs) |  |
 | [000-clrs-dfs](https://github.com/lge88/lc/tree/master/000-clrs-dfs) |  |
 | [000-clrs-dfs-stack](https://github.com/lge88/lc/tree/master/000-clrs-dfs-stack) |  |
+| [000-clrs-gcd](https://github.com/lge88/lc/tree/master/000-clrs-gcd) |  |
 | [000-clrs-graph-template-v1](https://github.com/lge88/lc/tree/master/000-clrs-graph-template-v1) |  |
 | [000-clrs-heap-sort](https://github.com/lge88/lc/tree/master/000-clrs-heap-sort) |  |
 | [000-clrs-kmp](https://github.com/lge88/lc/tree/master/000-clrs-kmp) |  |
+| [000-clrs-quicksort](https://github.com/lge88/lc/tree/master/000-clrs-quicksort) |  |
+| [000-clrs-sorting-common](https://github.com/lge88/lc/tree/master/000-clrs-sorting-common) |  |
+| [000-common-utils](https://github.com/lge88/lc/tree/master/000-common-utils) |  |
 | [000-dp-maximum-sum-increasing-subsequence](https://github.com/lge88/lc/tree/master/000-dp-maximum-sum-increasing-subsequence) |  |
 | [000-dynamic-programming-subset-sum-problem](https://github.com/lge88/lc/tree/master/000-dynamic-programming-subset-sum-problem) |  |
 | [000-external](https://github.com/lge88/lc/tree/master/000-external) |  |
@@ -17,7 +22,11 @@ Problems
 | [000-print-binary-tree-vertical-order](https://github.com/lge88/lc/tree/master/000-print-binary-tree-vertical-order) |  |
 | [000-remove-duplicates-in-sorted-array-put-duplicated-at-the-end](https://github.com/lge88/lc/tree/master/000-remove-duplicates-in-sorted-array-put-duplicated-at-the-end) |  |
 | [000-tail](https://github.com/lge88/lc/tree/master/000-tail) |  |
+| [043-multiply-strings](https://github.com/lge88/lc/tree/master/043-multiply-strings) | https://leetcode.com/problems/multiply-strings |
 | [053-maximum-subarray.dnc](https://github.com/lge88/lc/tree/master/053-maximum-subarray.dnc) | https://leetcode.com/problems/maximum-subarray |
+| [138-copy-list-with-random-pointer](https://github.com/lge88/lc/tree/master/138-copy-list-with-random-pointer) | https://leetcode.com/problems/copy-list-with-random-pointer |
+| [146-lru-cache](https://github.com/lge88/lc/tree/master/146-lru-cache) | https://leetcode.com/problems/lru-cache |
+| [149-max-points-on-a-line](https://github.com/lge88/lc/tree/master/149-max-points-on-a-line) | https://leetcode.com/problems/max-points-on-a-line |
 | [198-house-robber](https://github.com/lge88/lc/tree/master/198-house-robber) | https://leetcode.com/problems/house-robber |
 | [200-number-of-islands](https://github.com/lge88/lc/tree/master/200-number-of-islands) | https://leetcode.com/problems/number-of-islands |
 | [201-bitwise-and-of-numbers-range](https://github.com/lge88/lc/tree/master/201-bitwise-and-of-numbers-range) | https://leetcode.com/problems/bitwise-and-of-numbers-range |
@@ -65,6 +74,10 @@ Problems
 | [338-counting-bits](https://github.com/lge88/lc/tree/master/338-counting-bits) | https://leetcode.com/problems/counting-bits |
 | [344-reverse-string](https://github.com/lge88/lc/tree/master/344-reverse-string) | https://leetcode.com/problems/reverse-string |
 | [371-sum-of-two-integers](https://github.com/lge88/lc/tree/master/371-sum-of-two-integers) | https://leetcode.com/problems/sum-of-two-integers |
+| [387-find-unique-character-in-a-string](https://github.com/lge88/lc/tree/master/387-find-unique-character-in-a-string) | https://leetcode.com/problems/find-unique-character-in-a-string |
 | [388-longest-absolute-file-path](https://github.com/lge88/lc/tree/master/388-longest-absolute-file-path) | https://leetcode.com/problems/longest-absolute-file-path |
 | [389-find-the-difference](https://github.com/lge88/lc/tree/master/389-find-the-difference) | https://leetcode.com/problems/find-the-difference |
+| [392-is-subsequence](https://github.com/lge88/lc/tree/master/392-is-subsequence) | https://leetcode.com/problems/is-subsequence |
+| [415-add-strings](https://github.com/lge88/lc/tree/master/415-add-strings) | https://leetcode.com/problems/add-strings |
+| [418-sentence-screen-fitting.tle](https://github.com/lge88/lc/tree/master/418-sentence-screen-fitting.tle) | https://leetcode.com/problems/sentence-screen-fitting |
 
