@@ -67,16 +67,18 @@ class Solution {
   }
 };
 
-void test(TreeNode* root) {
+void test(TreeNode* root, const string& expected) {
   Solution sol;
   vector<vector<int> > actual = sol.levelOrderBottom(root);
-  cout << "[\n";
+  ostringstream oss;
   for (const vector<int>& row : actual) {
-    cout << "  [";
-    for (int el : row) cout << " " << el;
-    cout << " ]\n";
+    for (int i = 0, len = row.size(); i < len; ++i) oss << (i > 0 ? " " : "") << row[i];
+    oss << "\n";
   }
-  cout << "]\n\n";
+  cout << "expected:\n" << expected;
+  cout << "actual:\n" << oss.str();
+  cout << "\n";
+  assert(oss.str() == expected);
 }
 
 int main(int argc, char* argv[]) {
@@ -84,15 +86,16 @@ int main(int argc, char* argv[]) {
     TreeNode n3(3), n9(9), n20(20), n15(15), n7(7);
     n3.left = &n9; n3.right = &n20;
     n20.left = &n15; n20.right = &n7;
-    test(&n3);
+    string expected("3\n20 9\n15 7\n");
+    test(&n3, expected);
   }
   {
     TreeNode n3(3), n9(9), n20(20), n15(15), n7(7), n6(6), n12(12);
     n3.left = &n9; n3.right = &n20;
     n20.left = &n15; n20.right = &n7;
-    n15.left = &n6;
-    n7.right = &n12;
-    test(&n3);
+    n15.left = &n6; n7.right = &n12;
+    string expected("3\n20 9\n15 7\n12 6\n");
+    test(&n3, expected);
   }
   return 0;
 }
