@@ -28,38 +28,25 @@ class Solution {
 
     queue<TreeNode*> q;
     q.push(root);
-
-    res.push_back(vector<int>(1, root->val));
-    bool rightToLeft = true;
-    int thisLevelRemains = 1;
-    vector<int> nextLevel;
+    int levelCounter = 1;
+    vector<int> thisLevel;
+    bool rightToLeft = false;
 
     while (!q.empty()) {
       TreeNode* node = q.front();
       q.pop();
 
-      if (node->left != NULL) {
-        q.push(node->left);
-        nextLevel.push_back(node->left->val);
-      }
+      thisLevel.push_back(node->val);
+      if (node->left) q.push(node->left);
+      if (node->right) q.push(node->right);
 
-      if (node->right != NULL) {
-        q.push(node->right);
-        nextLevel.push_back(node->right->val);
-      }
-
-      --thisLevelRemains;
-      if (thisLevelRemains == 0) {
-        if (rightToLeft) {
-          reverse(nextLevel.begin(), nextLevel.end());
-        }
-
-        thisLevelRemains = nextLevel.size();
+      --levelCounter;
+      if (levelCounter == 0) {
+        res.push_back(vector<int>());
+        if (rightToLeft) reverse(thisLevel.begin(), thisLevel.end());
         rightToLeft = !rightToLeft;
-        if (nextLevel.size() > 0) {
-          res.push_back(vector<int>(0));
-          swap(res.back(), nextLevel);
-        }
+        swap(res.back(), thisLevel);
+        levelCounter = q.size();
       }
     }
 
