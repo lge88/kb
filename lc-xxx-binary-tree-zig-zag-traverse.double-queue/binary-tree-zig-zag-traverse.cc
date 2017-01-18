@@ -23,32 +23,24 @@ class Solution {
     vector<vector<int> > res;
     if (root == NULL) return res;
 
-    res.push_back(vector<int>(1, root->val));
-    bool rightToLeft = true;
+    queue<TreeNode*> current, next;
+    vector<int> thisLevel;
+    bool rightToLeft = false;
 
-    queue<TreeNode*> thisLevel;
-    queue<TreeNode*> nextLevel;
-    thisLevel.push(root);
+    current.push(root);
+    while (!current.empty()) {
+      TreeNode* node = current.front();
+      current.pop();
+      thisLevel.push_back(node->val);
+      if (node->left) next.push(node->left);
+      if (node->right) next.push(node->right);
 
-    while (!thisLevel.empty()) {
-      TreeNode* node = thisLevel.front();
-      thisLevel.pop();
-
-      if (node->left != NULL) nextLevel.push(node->left);
-      if (node->right != NULL) nextLevel.push(node->right);
-
-      if (thisLevel.size() == 0 && nextLevel.size() > 0) {
+      if (current.empty()) {
         res.push_back(vector<int>(0));
-        while (!nextLevel.empty()) {
-          TreeNode* n = nextLevel.front();
-          nextLevel.pop();
-          thisLevel.push(n);
-          res.back().push_back(n->val);
-        }
-        if (rightToLeft) {
-          reverse(res.back().begin(), res.back().end());
-        }
+        if (rightToLeft) reverse(thisLevel.begin(), thisLevel.end());
         rightToLeft = !rightToLeft;
+        swap(res.back(), thisLevel);
+        swap(current, next);
       }
     }
 
