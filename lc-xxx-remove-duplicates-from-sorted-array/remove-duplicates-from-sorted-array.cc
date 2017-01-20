@@ -19,7 +19,7 @@ class Solution {
     // return unique(A, A + n) - A;
     if (n <= 1) return n;
     int len = 1;
-    for (int i = 2; i < n; ++i) {
+    for (int i = 1; i < n; ++i) {
       if (A[i] != A[len - 1]) {
         A[len] = A[i];
         ++len;
@@ -57,6 +57,11 @@ int main(int argc, char* argv[]) {
   {
     int A[] = { 1 };
     int expected[] = { 1 };
+    test(A, sizeof(A)/sizeof(int), expected, sizeof(expected)/sizeof(int));
+  }
+  {
+    int A[] = { 1, 2 };
+    int expected[] = { 1, 2 };
     test(A, sizeof(A)/sizeof(int), expected, sizeof(expected)/sizeof(int));
   }
   {
