@@ -1,8 +1,8 @@
 #include <queue>
 
-#include "000-clrs-graph-template-v1/Graph.hh"
-#include "000-clrs-graph-template-v1/GraphTextIO.hh"
-#include "000-clrs-graph-template-v1/GraphBuilder.hh"
+#include "clrs-graph-template-v1/Graph.hh"
+#include "clrs-graph-template-v1/GraphTextIO.hh"
+#include "clrs-graph-template-v1/GraphBuilder.hh"
 
 typedef std::string BfsVertexIdType;
 typedef std::string BfsGraphState;

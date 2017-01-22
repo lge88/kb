@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "000-clrs-graph-template-v1/DfsGraphTypes.hh"
+#include "clrs-graph-template-v1/DfsGraphTypes.hh"
 
 typedef DfsGraph::GraphState GraphState;
 typedef DfsGraph::VertexState VertexState;

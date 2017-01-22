@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include "000-external/catch.hpp"
+#include "external/catch.hpp"
 
 #include "MaxPriorityQueue.hh"
 #include <random>
