@@ -1,4 +1,4 @@
 readme:
-	./build_readme > README.md
+	node ./build-readme.js > README.md
 
 .PHONY: readme

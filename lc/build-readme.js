@@ -1,4 +1,3 @@
-#! /usr/bin/env node
 const Mustache = require('mustache');
 const fs = require('fs');
 
@@ -13,7 +12,7 @@ let view = {
 };
 
 const folderRe = /^([0-9]{3,})-([0-9a-z\-]+)(\..+)?$/;
-const solBaseUrl = 'https://github.com/lge88/lc/tree/master';
+const solBaseUrl = 'https://github.com/lge88/kb/tree/master/lc';
 const lcBaseUrl = 'https://leetcode.com/problems';
 
 fs.readdirSync(__dirname).map((filename) => {
