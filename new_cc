@@ -63,6 +63,7 @@ BOILERPLATE_EOF
 
 cat <<GITIGNORE_EOF >$dest_dir/.gitignore
 $problem_name
+*.o
 *.dSYM
 GITIGNORE_EOF
 
