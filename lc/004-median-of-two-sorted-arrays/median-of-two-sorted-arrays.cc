@@ -33,7 +33,7 @@ class Solution {
     const vector<int>& arr_;
   };
 
-  double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+  double findMedianSortedArrays(const vector<int>& nums1, const vector<int>& nums2) {
     int n = nums1.size() + nums2.size();
     Slice A(nums1), B(nums2);
     if (n % 2 == 0) {
@@ -71,7 +71,7 @@ class Solution {
   }
 };
 
-void test(vector<int>& A, vector<int>& B, double expected) {
+void test(const vector<int>& A, const vector<int>& B, double expected) {
   Solution sol;
   cout << "A: [ ";
   for (size_t i = 0; i < A.size(); ++i) cout << (i > 0 ? ", " : "") << A[i];
@@ -89,6 +89,9 @@ int main(int argc, char* argv[]) {
     vector<int> A = { 2, 3, 4 };
     vector<int> B = { 1 };
     test(A, B, 2.5);
+  }
+  {
+    test({ 4 }, { 1, 2, 3 }, 2.5);
   }
   return 0;
 }
