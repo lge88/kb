@@ -1,0 +1,3 @@
+shared_array
+*.o
+*.dSYM
