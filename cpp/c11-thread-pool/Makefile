@@ -1,8 +1,8 @@
 run: thread-pool
 	./thread-pool
 
-thread-pool: ThreadPool.hh Queue.hh thread-pool.cc
-	g++ -std=c++11 -pthread -g $^ -o $@
+thread-pool: *.hh thread-pool.cc
+	g++ -std=c++11 -pthread -g thread-pool.cc -o $@
 
 clean:
 	rm -fr thread-pool *.o *.dSYM

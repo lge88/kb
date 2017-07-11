@@ -1,33 +1,42 @@
 #ifndef QUEUE_HH
 #define QUEUE_HH
 
-#include <deque>
+#include <queue>
+#include <mutex>
 
 template<typename T>
 class Queue {
  public:
-  void enqueue(const T& item);
-  T dequeue();
-  int size() const;
+  Queue(size_t capacity);
+  bool enqueue(const T& item);
+  bool dequeue(T& item);
+
  private:
-  std::deque<T> data_;
+  size_t capacity_;
+  std::mutex mtx_;
+  std::queue<T> data_;
+
 }; // class Queue
 
 template<typename T>
-void Queue<T>::enqueue(const T& item) {
-  data_.push_back(item);
+Queue<T>::Queue(size_t capacity)
+    : capacity_(capacity) {}
+
+template<typename T>
+bool Queue<T>::enqueue(const T& item) {
+  std::lock_guard<std::mutex> lock(mtx_);
+  if (data_.size() >= capacity_) return false;
+  data_.push(item);
+  return true;
 }
 
 template<typename T>
-T Queue<T>::dequeue() {
-  T item = data_.front();
-  data_.pop_front();
-  return item;
-}
-
-template<typename T>
-int Queue<T>::size() const {
-  return data_.size();
+bool Queue<T>::dequeue(T& item) {
+  std::lock_guard<std::mutex> lock(mtx_);
+  if (data_.empty()) return false;
+  item = data_.front();
+  data_.pop();
+  return true;
 }
 
 #endif // QUEUE_HH

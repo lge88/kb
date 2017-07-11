@@ -12,18 +12,14 @@
 template<typename Task>
 class ThreadPool {
  public:
-  ThreadPool(int numThreads, int maxQueueSize);
+  ThreadPool(int numThreads, int queueCapacity);
   ~ThreadPool();
 
   // Return false if queue is full
   bool schedule(Task t);
 
-  void stop();
-
  private:
-  std::mutex queueMutex_;
   Queue<Task> queue_;
-  int maxQueueSize_;
 
   bool stopRequested_;
   void perThreadFunc(int id);
@@ -34,8 +30,8 @@ class ThreadPool {
 }; // class ThreadPool
 
 template<typename Task>
-ThreadPool<Task>::ThreadPool(int numThreads, int maxQueueSize)
-    : maxQueueSize_(maxQueueSize),
+ThreadPool<Task>::ThreadPool(int numThreads, int queueCapacity)
+    : queue_(queueCapacity),
       stopRequested_(false)
 {
   for (int i = 0; i < numThreads; ++i) {
@@ -55,49 +51,31 @@ ThreadPool<Task>::~ThreadPool() {
 
 template<typename Task>
 void ThreadPool<Task>::perThreadFunc(int id) {
-  {
-    std::lock_guard<std::mutex> lock(ioMutex_);
-    std::cerr << "thread (" << id << ") started.\n";
-  }
+  // {
+  //   std::lock_guard<std::mutex> lock(ioMutex_);
+  //   std::cerr << "thread (" << id << ") started.\n";
+  // }
 
+  // Busy wait
   while (!stopRequested_) {
     // - pull a task from task queue if it is not empty
     // - run the task
     Task task;
-    bool shouldRun = false;
-    {
-      std::lock_guard<std::mutex> lock(queueMutex_);
-      if (queue_.size() > 0) {
-        task = queue_.dequeue();
-        shouldRun = true;
-      }
+    if (queue_.dequeue(task)) {
+      task();
     }
-    if (shouldRun) task();
-    std::this_thread::sleep_for(std::chrono::nanoseconds(100));
+    // std::this_thread::sleep_for(std::chrono::nanoseconds(1000000));
   }
 
-  {
-    std::lock_guard<std::mutex> lock(ioMutex_);
-    std::cerr << "thread (" << id << ") stoped.\n";
-  }
+  // {
+  //   std::lock_guard<std::mutex> lock(ioMutex_);
+  //   std::cerr << "thread (" << id << ") stoped.\n";
+  // }
 }
 
 template<typename Task>
-bool ThreadPool<Task>::schedule(Task t) {
-  {
-    std::lock_guard<std::mutex> lock(queueMutex_);
-    if (queue_.size() >= maxQueueSize_) return false;
-    queue_.enqueue(t);
-  }
-  return true;
-}
-
-template<typename Task>
-void ThreadPool<Task>::stop() {
-  stopRequested_ = true;
-  for (std::thread& t : threads_) {
-    t.join();
-  }
+bool ThreadPool<Task>::schedule(Task task) {
+  return queue_.enqueue(task);
 }
 
 #endif // THREADPOOL_HH
