@@ -70,7 +70,7 @@ class ThreadPoolBenchmark {
   }
 
   static inline double getCurrentMilliseconds() {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(
+    return std::chrono::duration<double, std::milli>(
         std::chrono::system_clock::now().time_since_epoch()).count();
   }
 
@@ -125,7 +125,7 @@ void ThreadPoolBenchmark::stop() {
 }
 
 void ThreadPoolBenchmark::benchmarkThreadFunc() {
-  const uint64_t interval = options_.qps_;
+  const uint64_t interval = options_.qps_ == 0 ? 1000000 : options_.qps_;
   const uint64_t latency = options_.singleExecutionLatency_;
   while (!stopRequested_) {
     Task task(interval, latency, &state_);
@@ -146,7 +146,8 @@ ThreadPoolBenchmark::Task::Task(uint64_t checkInterval, uint64_t latencyMillisec
 void ThreadPoolBenchmark::Task::operator() () {
   // TODO: simulate busy work for given latencyMilliseconds.
   // sleep_for won't cause user CPU...
-  std::this_thread::sleep_for(std::chrono::milliseconds(latency_));
+  // std::this_thread::sleep_for(std::chrono::milliseconds(latency_));
+
   uint64_t count = ++state_->requestCompleted_;
   if (count % interval_ == 0) {
     double now = getCurrentMilliseconds();

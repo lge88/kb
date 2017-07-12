@@ -9,6 +9,10 @@
 
 #include "Queue.hh"
 
+// Task is a:
+// - DefaultConstructible
+// - CopyAssignable
+// - Defined void operator() (void)
 template<typename Task>
 class ThreadPool {
  public:
@@ -16,7 +20,7 @@ class ThreadPool {
   ~ThreadPool();
 
   // Return false if queue is full
-  bool schedule(Task t);
+  bool schedule(Task task);
 
  private:
   Queue<Task> queue_;
@@ -24,9 +28,6 @@ class ThreadPool {
   bool stopRequested_;
   void perThreadFunc(int id);
   std::vector<std::thread> threads_;
-
-  std::mutex ioMutex_;
-
 }; // class ThreadPool
 
 template<typename Task>
@@ -43,34 +44,20 @@ template<typename Task>
 ThreadPool<Task>::~ThreadPool() {
   stopRequested_ = true;
   for (std::thread& t : threads_) {
-    if (t.joinable()) {
-      t.join();
-    }
+    if (t.joinable()) t.join();
   }
 }
 
 template<typename Task>
 void ThreadPool<Task>::perThreadFunc(int id) {
-  // {
-  //   std::lock_guard<std::mutex> lock(ioMutex_);
-  //   std::cerr << "thread (" << id << ") started.\n";
-  // }
-
-  // Busy wait
+  // Busy wait:
+  // - pull a task from task queue if it is not empty
+  // - run the task
+  Task task;
   while (!stopRequested_) {
-    // - pull a task from task queue if it is not empty
-    // - run the task
-    Task task;
-    if (queue_.dequeue(task)) {
-      task();
-    }
+    if (queue_.dequeue(task)) task();
     // std::this_thread::sleep_for(std::chrono::nanoseconds(1000000));
   }
-
-  // {
-  //   std::lock_guard<std::mutex> lock(ioMutex_);
-  //   std::cerr << "thread (" << id << ") stoped.\n";
-  // }
 }
 
 template<typename Task>
