@@ -21,6 +21,8 @@ struct ThreadPoolBenchmarkState {
   uint64_t requestDroppedSinceLast_;
   Duration totalLatencySinceLast_;
 
+  int dummy_;
+
   ThreadPoolBenchmarkState() {
     reset();
   }
@@ -55,12 +57,14 @@ struct ThreadPoolBenchmarkState {
       to << "\n"
          << std::left << std::setw(25) << "Throughput"
          << std::left << std::setw(25) << "Drop Rate"
+         << std::left << std::setw(25) << "Avg Latency"
          << std::left << std::setw(25) << "Requests Completed"
          << "\n";
     }
 
     to << std::left << std::setw(25) << getCurrentThroughput()
        << std::left << std::setw(25) << getDropRate()
+       << std::left << std::setw(25) << getCurrentAverageLatency()
        << std::left << std::setw(25) << totalRequestCompleted_
        << "\n";
   }

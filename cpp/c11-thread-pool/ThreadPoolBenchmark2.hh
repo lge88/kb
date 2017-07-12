@@ -119,12 +119,21 @@ ThreadPoolBenchmark::Task::Task(
     : started_(started),
       state_(sharedState) {}
 
+inline int heavyWork(int h) {
+  for (uint64_t i = 0; i < 10000000; ++i) {
+    h ^= std::hash<int>{}(h);
+  }
+  return h;
+}
+
 void ThreadPoolBenchmark::Task::operator() () {
   // TODO: simulate busy work for given latencyMilliseconds.
   // sleep_for won't cause user CPU...
   // std::this_thread::sleep_for(std::chrono::milliseconds(latency_));
 
   // Do some work...
+  // Needs to write to state_->dummy in order for compiler to optimize the value out.
+  state_->dummy_ = heavyWork(state_->totalRequestCompleted_);
 
   state_->requestCompletedSinceLast_++;
   state_->totalRequestCompleted_++;

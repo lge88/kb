@@ -7,10 +7,10 @@
 
 int main(int argc, char* argv[]) {
   ThreadPoolBenchmark benchmark;
-  benchmark.options_.numPoolThreads_ = 2;
-  benchmark.options_.queueCapacity_ = 100;
+  benchmark.options_.numPoolThreads_ = 1;
+  benchmark.options_.queueCapacity_ = 1;
 
-  benchmark.options_.numClientThreads_ = 2;
+  benchmark.options_.numClientThreads_ = 1;
   benchmark.options_.refreshIntervalMilliseconds_ = 100;
   // benchmark.options_.singleExecutionLatency_ = 0;
   // benchmark.options_.qps_ = 12000;
