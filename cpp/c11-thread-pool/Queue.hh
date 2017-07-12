@@ -10,6 +10,7 @@ class Queue {
   Queue(size_t capacity);
   bool enqueue(const T& item);
   bool dequeue(T& item);
+  size_t size() const;
 
  private:
   size_t capacity_;
@@ -37,6 +38,11 @@ bool Queue<T>::dequeue(T& item) {
   item = data_.front();
   data_.pop();
   return true;
+}
+
+template<typename T>
+size_t Queue<T>::size() const  {
+  return data_.size();
 }
 
 #endif // QUEUE_HH

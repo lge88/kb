@@ -13,8 +13,15 @@ struct ThreadPoolBenchmarkOptions {
   // How many threads to use to generate requests
   uint32_t numClientThreads_ = 1;
 
+  // How many nanoseconds should client wait before firing next request.
+  // 0 means no wait
+  uint64_t thinkTimeNanoseconds_ = 0;
+
   // How often should background thread to check the benchmark state?
   uint64_t refreshIntervalMilliseconds_ = 100;
+
+  // Number of repetations the cpu insive code runs
+  uint64_t loadRepeat_ = 1000000;
 };
 
 // template<typename Task>
@@ -28,7 +35,7 @@ class ThreadPoolBenchmark {
   void start();
   void stop();
 
-  ThreadPoolBenchmarkState getState() const { return state_; }
+  const ThreadPoolBenchmarkState& getState() const { return state_; }
 
   static inline double getCurrentMilliseconds() {
     return std::chrono::duration<double, std::milli>(
@@ -40,12 +47,22 @@ class ThreadPoolBenchmark {
 
   struct Task {
     Task();
-    Task(ThreadPoolBenchmarkState::Timestamp started, ThreadPoolBenchmarkState* sharedState = nullptr);
+    Task(ThreadPoolBenchmarkState::Timestamp started,
+         uint64_t repeat_ = 1000000,
+         ThreadPoolBenchmarkState* sharedState = nullptr);
     void operator() ();
 
    private:
+    uint64_t repeat_;
     ThreadPoolBenchmarkState::Timestamp started_;
     ThreadPoolBenchmarkState* state_;
+
+    inline int heavyWork(int h) {
+      for (uint64_t i = 0; i < repeat_; ++i) {
+        h ^= std::hash<uint64_t>{}(h);
+      }
+      return h;
+    }
   };
 
   bool stopRequested_ = false;
@@ -72,8 +89,6 @@ void ThreadPoolBenchmark::start() {
   stopRequested_ = false;
   pool_.reset(new ThreadPool<Task>(options_.numPoolThreads_, options_.queueCapacity_));
   state_.reset();
-  state_.startedTime_ = ThreadPoolBenchmarkState::getTimestamp();
-  state_.lastRecordedTime_ = state_.startedTime_;
   for (int i = 0; i < options_.numClientThreads_; ++i) {
     threads_.emplace_back(&ThreadPoolBenchmark::benchmarkThreadFunc, this);
   }
@@ -93,21 +108,21 @@ void ThreadPoolBenchmark::benchmarkThreadFunc() {
   // const uint64_t interval = options_.qps_ == 0 ? 1000000 : options_.qps_;
   // const uint64_t latency = options_.singleExecutionLatency_;
   while (!stopRequested_) {
-    Task task(ThreadPoolBenchmarkState::getTimestamp(), &state_);
+    Task task(ThreadPoolBenchmarkState::getTimestamp(), options_.loadRepeat_, &state_);
     bool scheduled = pool_->schedule(task);
+    state_.requestSentSinceLast_++;
     state_.requestDroppedSinceLast_ += scheduled ? 0 : 1;
-    // if (options_.qps_ > 0) {
-    //   uint64_t thinkTime = 1000000 / options_.qps_;
-    // std::this_thread::sleep_for(std::chrono::microseconds(1000));
-    // }
+    if (options_.thinkTimeNanoseconds_ > 0) {
+      std::this_thread::sleep_for(std::chrono::nanoseconds(options_.thinkTimeNanoseconds_));
+    }
   }
 }
 
 void ThreadPoolBenchmark::stateUpdateThreadFunc() {
   while (!stopRequested_) {
     std::this_thread::sleep_for(std::chrono::milliseconds(options_.refreshIntervalMilliseconds_));
-    state_.clearLast();
-    state_.lastRecordedTime_ = ThreadPoolBenchmarkState::getTimestamp();
+    state_.update();
+    state_.queueSize_ = pool_->queueSize();
   }
 }
 
@@ -115,16 +130,11 @@ ThreadPoolBenchmark::Task::Task() {}
 
 ThreadPoolBenchmark::Task::Task(
     ThreadPoolBenchmarkState::Timestamp started,
+    uint64_t repeat,
     ThreadPoolBenchmarkState* sharedState)
     : started_(started),
+      repeat_(repeat),
       state_(sharedState) {}
-
-inline int heavyWork(int h) {
-  for (uint64_t i = 0; i < 10000000; ++i) {
-    h ^= std::hash<int>{}(h);
-  }
-  return h;
-}
 
 void ThreadPoolBenchmark::Task::operator() () {
   // TODO: simulate busy work for given latencyMilliseconds.
@@ -137,7 +147,10 @@ void ThreadPoolBenchmark::Task::operator() () {
 
   state_->requestCompletedSinceLast_++;
   state_->totalRequestCompleted_++;
-  state_->totalLatencySinceLast_ += ThreadPoolBenchmarkState::getTimestamp() - started_;
+
+  double elapsed = ThreadPoolBenchmarkState::Duration(ThreadPoolBenchmarkState::getTimestamp() - started_).count();
+  auto current = state_->totalLatencySinceLast_.load();
+  while (!state_->totalLatencySinceLast_.compare_exchange_weak(current, current + elapsed));
 }
 
 #endif // THREAD_POOL_BENCHMARK_HH

@@ -22,6 +22,8 @@ class ThreadPool {
   // Return false if queue is full
   bool schedule(Task task);
 
+  inline size_t queueSize() const { return queue_.size(); }
+
  private:
   Queue<Task> queue_;
 
@@ -56,7 +58,8 @@ void ThreadPool<Task>::perThreadFunc(int id) {
   Task task;
   while (!stopRequested_) {
     if (queue_.dequeue(task)) task();
-    // std::this_thread::sleep_for(std::chrono::nanoseconds(1000000));
+    // Busy waiting cost high cpu but improve latency.
+    std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
   }
 }
 
