@@ -25,7 +25,7 @@ struct ThreadPoolBenchmarkState {
 
   uint64_t queueSize_;
 
-  int dummy_;
+  uint64_t dummy_;
 
   ThreadPoolBenchmarkState() {
     reset();

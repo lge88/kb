@@ -57,11 +57,16 @@ class ThreadPoolBenchmark {
     ThreadPoolBenchmarkState::Timestamp started_;
     ThreadPoolBenchmarkState* state_;
 
-    inline int heavyWork(int h) {
-      for (uint64_t i = 0; i < repeat_; ++i) {
-        h ^= std::hash<uint64_t>{}(h);
-      }
-      return h;
+    inline uint64_t h(uint64_t x) {
+      x = ((x >> 16) ^ x) * 0x45d9f3b;
+      x = ((x >> 16) ^ x) * 0x45d9f3b;
+      x = (x >> 16) ^ x;
+      return x;
+    }
+
+    inline uint64_t work(uint64_t x) {
+      for (uint64_t i = 0; i < repeat_; ++i) x = h(x);
+      return x;
     }
   };
 
@@ -142,8 +147,8 @@ void ThreadPoolBenchmark::Task::operator() () {
   // std::this_thread::sleep_for(std::chrono::milliseconds(latency_));
 
   // Do some work...
-  // Needs to write to state_->dummy in order for compiler to optimize the value out.
-  state_->dummy_ = heavyWork(state_->totalRequestCompleted_);
+  // Needs to write to dummy_ in order for compiler to optimize the value out.
+  state_->dummy_ = work(state_->totalRequestCompleted_);
 
   state_->requestCompletedSinceLast_++;
   state_->totalRequestCompleted_++;

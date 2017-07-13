@@ -7,15 +7,15 @@
 
 int main(int argc, char* argv[]) {
   ThreadPoolBenchmark benchmark;
-  benchmark.options_.numPoolThreads_ = 4;
+  uint64_t K = 1000, M = 1000 * K, G = 1000 * M;
+  benchmark.options_.numPoolThreads_ = 8;
   benchmark.options_.queueCapacity_ = 100;
   benchmark.options_.numClientThreads_ = 1;
   // benchmark.options_.thinkTimeNanoseconds_ = 1000000;
   // benchmark.options_.thinkTimeNanoseconds_ = 1000 * 1000 * 200;
-  benchmark.options_.thinkTimeNanoseconds_ = 1000 * 1000 * 5;
-  // benchmark.options_.thinkTimeNanoseconds_ = 0;
-  benchmark.options_.refreshIntervalMilliseconds_ = 1000;
-  benchmark.options_.loadRepeat_ = 10000000;
+  benchmark.options_.thinkTimeNanoseconds_ = M * 90 / 10 / 8;
+  benchmark.options_.refreshIntervalMilliseconds_ = 500;
+  benchmark.options_.loadRepeat_ = 500 * K;
 
   benchmark.start();
 

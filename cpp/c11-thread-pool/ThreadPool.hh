@@ -59,7 +59,10 @@ void ThreadPool<Task>::perThreadFunc(int id) {
   while (!stopRequested_) {
     if (queue_.dequeue(task)) task();
     // Busy waiting cost high cpu but improve latency.
+    // std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
     std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
+    // std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+    // std::this_thread::sleep_for(std::chrono::nanoseconds(0));
   }
 }
 
