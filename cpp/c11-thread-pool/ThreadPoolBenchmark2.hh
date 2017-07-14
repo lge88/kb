@@ -2,11 +2,15 @@
 #define THREAD_POOL_BENCHMARK_HH
 
 #include <atomic>
+
+#include "ThreadPool.hh"
+// #include "ThreadPool2.hh"
+// #include "ThreadPool3.hh"
 #include "ThreadPoolBenchmarkState.hh"
 
 struct ThreadPoolBenchmarkOptions {
   // pool options (consumer)
-  uint32_t numPoolThreads_ = 4;
+  uint32_t numPoolThreads_ = 1;
   uint32_t queueCapacity_ = 100;
 
   // client options (producer)

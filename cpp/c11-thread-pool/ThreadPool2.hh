@@ -6,8 +6,8 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <condition_variable>
 
-// #include "Queue.hh"
 #include "RingBuffer.hh"
 
 // Task is a:
@@ -26,9 +26,10 @@ class ThreadPool {
   inline size_t queueSize() const { return queue_.size(); }
 
  private:
-  // Queue<Task> queue_;
-  RingBuffer<Task> queue_;
   std::mutex mtx_;
+  std::condition_variable cv_;
+
+  RingBuffer<Task> queue_;
 
   bool stopRequested_;
   void perThreadFunc(int id);
@@ -40,7 +41,6 @@ ThreadPool<Task>::ThreadPool(int numThreads, int queueCapacity)
     : queue_(queueCapacity),
       stopRequested_(false)
 {
-  std::lock_guard<std::mutex> l(mtx_);
   for (int i = 0; i < numThreads; ++i) {
     threads_.emplace_back(&ThreadPool::perThreadFunc, this, i);
   }
@@ -54,32 +54,32 @@ ThreadPool<Task>::~ThreadPool() {
   }
 }
 
+// Consumer
 template<typename Task>
 void ThreadPool<Task>::perThreadFunc(int id) {
-  // Busy wait:
-  // - pull a task from task queue if it is not empty
-  // - run the task
+  std::unique_lock<std::mutex> lock(mtx_);
   Task task;
   while (!stopRequested_) {
-    bool shouldRun = false;
-    {
-      std::lock_guard<std::mutex> l(mtx_);
-      shouldRun = queue_.dequeue(task);
+    // wait for condition: queue is not empty
+    while (queue_.empty()) {
+      cv_.wait(lock);
     }
+    queue_.dequeue(task);
 
-    if (shouldRun) task();
-    // Busy waiting cost high cpu but improve latency.
-    // std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
-    // std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
-    // std::this_thread::sleep_for(std::chrono::nanoseconds(1));
-    // std::this_thread::sleep_for(std::chrono::nanoseconds(0));
+    task();
   }
 }
 
+// Producer
 template<typename Task>
 bool ThreadPool<Task>::schedule(Task task) {
-  std::lock_guard<std::mutex> l(mtx_);
-  return queue_.enqueue(task);
+  std::unique_lock<std::mutex> lock(mtx_);
+
+  bool ok = queue_.enqueue(task);
+
+  lock.unlock();
+  cv_.notify_all();
+  return ok;
 }
 
 #endif // THREADPOOL_HH
