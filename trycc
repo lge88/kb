@@ -22,6 +22,7 @@ mkdir -p $dest_dir
 cat <<'BOILERPLATE_EOF' >$dest_file
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <iterator>
