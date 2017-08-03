@@ -2,8 +2,11 @@
 
 ## Input format
 [number of items]
+
 [weight of each item]
+
 [value of each item]
+
 [backpack capacity]
 
 ## Debugging
