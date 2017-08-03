@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
   bool verbose = argc > 1 && string(argv[1]) == "-v";
   vector<int> subset;
   int maxValue;
-std::tie(subset, maxValue) = knapsack01WithSolution(m, A, V, verbose);
+  std::tie(subset, maxValue) = knapsack01WithSolution(m, A, V, verbose);
 
   cout << maxValue << "\n";
 
