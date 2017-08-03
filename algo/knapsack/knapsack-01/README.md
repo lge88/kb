@@ -1,12 +1,12 @@
-# knapsack-01
+# 0/1 knapsack problem
 
-## input format
-<number of items>
-<weight of each item>
-<value of each item>
-<backpack capacity>
+## Input format
+[number of items]
+[weight of each item]
+[value of each item]
+[backpack capacity]
 
-## debugging
+## Debugging
 ```
 ./knapsack-01 -v <data/02.in
 ```
