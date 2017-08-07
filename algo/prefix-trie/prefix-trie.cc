@@ -7,9 +7,7 @@ using namespace std;
 
 class Trie {
  public:
-  Trie() {
-    root_.reset(new TrieNode);
-  }
+  Trie() : root_(new TrieNode) {}
 
   void insert(string word) {
     TrieNode* p = root_.get();
@@ -57,7 +55,11 @@ int main(int argc, char* argv[]) {
   vector<string> words = { "abc", "aa", "abcde", "xxx", "abef" };
 
   Trie t;
-  for (auto word : words) t.insert(word);
+  for (auto word : words) {
+    cout << word << " ";
+    t.insert(word);
+  }
+  cout << "\n";
 
   cout << "search(abc): " << t.search("abc") << "\n";
   cout << "search(ab): " << t.search("ab") << "\n";
