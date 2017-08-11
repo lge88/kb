@@ -1,0 +1,17 @@
+#! /bin/bash
+cwd=$(cd $(dirname $0) && pwd)
+
+data_dir=$cwd/data
+prog=$cwd/tsort
+
+for in_file in $(ls $data_dir/*.in); do
+  test_case=${in_file%.in}
+  test_case=${test_case##*/}
+  out_file=${data_dir}/${test_case}.out
+  diff <($prog <$in_file) $out_file >/dev/null
+  if [[ 0 -eq 0 ]]; then
+    echo "[PASS] ${test_case}"
+  else
+    echo "[FAIL] ${test_case}"
+  fi
+done
