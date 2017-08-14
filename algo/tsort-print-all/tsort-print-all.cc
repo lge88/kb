@@ -19,11 +19,10 @@ struct Graph {
   vector<vector<int> > adj;
 };
 
-void dfs(int u, const Graph& g, vector<int>& indegree, vector<int>& path, const set<int>& sources);
+void dfs(int u, const Graph& g, vector<int>& indegree, vector<int>& path, set<int>& sources);
 
 void tsortPrintAll(const Graph& g) {
-  int n = g.V;
-  vector<int> indegree(n, 0);
+  vector<int> indegree(g.V, 0);
   for (auto edge : g.adj) {
     for (auto v : edge) {
       indegree[v] += 1;
@@ -31,23 +30,26 @@ void tsortPrintAll(const Graph& g) {
   }
 
   set<int> sources;
-  for (int u = 0; u < n; ++u) {
+  for (int u = 0; u < g.V; ++u) {
     if (indegree[u] == 0) sources.insert(u);
   }
 
   vector<int> path;
-  for (auto u : sources) {
+
+  // Need this copy since in within each iteration, sources are mutated.
+  vector<int> sourcesCopy(sources.begin(), sources.end());
+  for (auto u : sourcesCopy) {
     path.push_back(u);
+    sources.erase(u);
 
-    auto newSources(sources);
-    newSources.erase(u);
-    dfs(u, g, indegree, path, newSources);
+    dfs(u, g, indegree, path, sources);
 
+    sources.insert(u);
     path.pop_back();
   }
 }
 
-void dfs(int u, const Graph& g, vector<int>& indegree, vector<int>& path, const set<int>& sources) {
+void dfs(int u, const Graph& g, vector<int>& indegree, vector<int>& path, set<int>& sources) {
   if (path.size() == g.V) {
     cout << "[";
     for (auto u : path) cout << " " << u;
@@ -55,24 +57,26 @@ void dfs(int u, const Graph& g, vector<int>& indegree, vector<int>& path, const 
     return;
   }
 
-  auto sourcesCopy(sources);
   for (auto v : g.adj[u]) {
     indegree[v] -= 1;
-    if (indegree[v] == 0) sourcesCopy.insert(v);
+    if (indegree[v] == 0) sources.insert(v);
   }
 
+  // Need this copy since in within each iteration, sources are mutated.
+  vector<int> sourcesCopy(sources.begin(), sources.end());
   for (auto v : sourcesCopy) {
     path.push_back(v);
+    sources.erase(v);
 
-    auto newSources(sourcesCopy);
-    newSources.erase(v);
-    dfs(v, g, indegree, path, newSources);
+    dfs(v, g, indegree, path, sources);
 
+    sources.insert(v);
     path.pop_back();
   }
 
   for (auto v : g.adj[u]) {
     indegree[v] += 1;
+    sources.erase(v);
   }
 }
 
