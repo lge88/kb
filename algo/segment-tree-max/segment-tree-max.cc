@@ -17,6 +17,7 @@ class SegmentTree {
   }
 
   int rangeMax(int a, int b) const {
+    if (a > b) swap(a, b);
     return rangeMax(root.get(), a, b);
   }
 
