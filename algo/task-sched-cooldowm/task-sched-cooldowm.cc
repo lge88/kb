@@ -31,11 +31,14 @@ string sched(const string& s, int k) {
 }
 
 void test(const string& s, int k) {
+  cout << "k: " << k << "\n";
   cout << "[in ]: " << s << "\n";
-  cout << "[out]: " << sched(s, k) << "\n";
+  cout << "[out]: " << sched(s, k) << "\n\n";
 }
 
 int main(int argc, char* argv[]) {
+  test("AABACCDCD", 1);
   test("AABACCDCD", 3);
+  test("AABACCDCD", 5);
   test("CDCD", 3);
 }
