@@ -97,6 +97,37 @@ void postorder(TreeNode* root, ostream& to) {
   }
 }
 
+void destroyTree(TreeNode* root) {
+  TreeNode* cur = root;
+  while (cur) {
+    TreeNode* last = cur;
+    while (cur) {
+      last = cur;
+      cur = cur->left;
+    }
+
+    if (last->right) {
+      cur = last->right;
+    } else {
+      TreeNode* parent = last->parent;
+      bool wasRightChild = parent && parent->right == last;
+      delete last;
+      while (wasRightChild) {
+        last = parent;
+        parent = last->parent;
+        wasRightChild = parent && parent->right == last;
+        delete last;
+      }
+
+      if (parent && parent->right) {
+        cur = parent->right;
+      } else {
+        cur = parent;
+      }
+    }
+  }
+}
+
 TreeNode* tree1() {
   auto n20 = new TreeNode(20), n8 = new TreeNode(8), n22 = new TreeNode(22);
   auto n4 = new TreeNode(4), n12 = new TreeNode(12);
@@ -130,9 +161,14 @@ void test(TreeNode* root) {
   cout << "\n";
 }
 
+void testDestroy() {
+  auto t1 = tree1();
+  destroyTree(t1);
+}
+
 int main(int argc, char* argv[]) {
 
-  test(tree1());
-
+  // test(tree1());
+  testDestroy();
   return 0;
 }
