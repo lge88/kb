@@ -71,6 +71,32 @@ void inorder(TreeNode* root, ostream& to) {
   }
 }
 
+void postorder(TreeNode* root, ostream& to) {
+  TreeNode* cur = root;
+  while (cur) {
+    TreeNode* last = cur;
+    while (cur) {
+      last = cur;
+      cur = cur->left;
+    }
+
+    if (last->right) {
+      cur = last->right;
+    } else {
+      cout << last->val << " ";
+      while (last->parent && last->parent->right == last) {
+          last = last->parent;
+          cout << last->val << " ";
+      }
+      if (last->parent && last->parent->right) {
+        cur = last->parent->right;
+      } else {
+        cur = last->parent;
+      }
+    }
+  }
+}
+
 TreeNode* tree1() {
   auto n20 = new TreeNode(20), n8 = new TreeNode(8), n22 = new TreeNode(22);
   auto n4 = new TreeNode(4), n12 = new TreeNode(12);
@@ -97,6 +123,10 @@ void test(TreeNode* root) {
 
   cout << "inorder:\n";
   inorder(root, cout);
+  cout << "\n";
+
+  cout << "postorder:\n";
+  postorder(root, cout);
   cout << "\n";
 }
 
