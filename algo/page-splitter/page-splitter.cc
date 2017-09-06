@@ -1,15 +1,8 @@
 #include <algorithm>
-#include <cassert>
-#include <cstdlib>
-#include <fstream>
 #include <iostream>
 #include <iterator>
-#include <map>
-#include <set>
-#include <list>
-#include <sstream>
+#include <forward_list>
 #include <string>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -27,33 +20,43 @@ vector <string> paginate(int num, vector <string> results) {
   vector<string> res;
   if (num <= 0) throw runtime_error("num is must be greater or equal to zero.");
 
-  list<string> remains(results.begin(), results.end());
-  while (!remains.empty()) {
+  // Linked list node value is (index, hostId) pair
+  using Node = pair<int, int>;
+  forward_list<Node> remains = { { -1, -1 } };
+  // First element is dummy node
+  auto prev = begin(remains);
+  for (int i = 0, n = results.size(); i < n; ++i) {
+    prev = remains.emplace_after(prev, i, getHostId(results[i]));
+  }
+
+  while (next(begin(remains)) != end(remains)) {
     unordered_set<int> seen;
     int count = 0;
 
-    for (auto b = remains.begin(), e = remains.end(); b != e;) {
-      int hostId = getHostId(*b);
+    prev = remains.begin();
+    for (auto b = next(prev), e = end(remains); b != e && count < num;) {
+      int index = b->first, hostId = b->second;
       // page is not filed and hostId is unique in current page
-      if (count < num && seen.find(hostId) == seen.end()) {
-        res.push_back(*b);
+      if (seen.find(hostId) == seen.end()) {
+        res.push_back(results[index]);
         seen.insert(hostId);
         count += 1;
-        b = remains.erase(b);
+        b = remains.erase_after(prev);
       } else {
-        ++b;
+        prev = b;
+        b = next(b);
       }
     }
 
     // If page is still not filled up, insert record ignore unique hostid constraint
-    for (auto b = remains.begin(), e = remains.end(); b != e && count < num;) {
-      res.push_back(*b);
+    prev = begin(remains);
+    for (auto b = next(prev), e = end(remains); b != e && count < num; b = remains.erase_after(prev)) {
+      res.push_back(results[b->first]);
       count += 1;
-      b = remains.erase(b);
     }
 
     // There are more records, put a separator
-    if (!remains.empty()) {
+    if (next(begin(remains)) != end(remains)) {
       res.push_back("");
     }
   }
