@@ -1,0 +1,4 @@
+boggle-game
+*.o
+*.dSYM
+boggle-game2
