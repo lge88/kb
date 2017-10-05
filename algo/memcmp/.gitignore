@@ -1,0 +1,3 @@
+memcmp
+*.o
+*.dSYM
